@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject; 
+use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
 
 class User extends Authenticatable implements JWTSubject
 {
@@ -18,8 +18,14 @@ class User extends Authenticatable implements JWTSubject
      */
     protected $fillable = [
         'name',
+        'username',
         'email',
         'password',
+        'duty', // Thêm cột duty
+        'phone', // Thêm cột phone
+        'address', // Thêm cột address
+        'birthday', // Thêm cột birthday
+        'role', // Thêm cột role
     ];
 
     /**
@@ -54,7 +60,7 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->getKey();
     }
- 
+
     /**
      * Return a key value array, containing any custom claims to be added to the JWT.
      *
@@ -64,4 +70,16 @@ class User extends Authenticatable implements JWTSubject
     {
         return [];
     }
+
+    // User.php
+    public function salaries()
+    {
+        return $this->hasMany(Salary::class);
+    }
+
+    public function managedRequests()
+    {
+        return $this->hasMany(Request::class, 'manager_id');
+    }
+
 }
