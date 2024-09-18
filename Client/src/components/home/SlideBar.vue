@@ -10,7 +10,7 @@
         <p class="text-gray-500">
           <i class="fas fa-briefcase"></i>
           Lương:
-          <span v-if="showSalary" class="mr-1">{{ user.salaries[0].total_salary }} $</span>
+          <span v-if="showSalary" class="mr-1">{{ user.salaries }} $</span>
           <span v-else class="mr-1">*************</span>
           <!-- Icon để ẩn/hiện mức lương -->
           <font-awesome-icon

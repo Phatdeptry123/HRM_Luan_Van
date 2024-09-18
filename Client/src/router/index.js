@@ -23,6 +23,11 @@ const router = createRouter({
       path: '/profile',
       name: 'profile',
       component: () => import('@/views/Profile.vue')
+    },
+    {
+      path: '/timeoff',
+      name: 'timeoff',
+      component: () => import('@/views/TimeOff.vue')
     }
   ]
 })

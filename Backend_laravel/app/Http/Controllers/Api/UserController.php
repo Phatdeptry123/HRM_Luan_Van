@@ -333,4 +333,64 @@ class UserController extends Controller
         }
     }
 
+        /**
+     * Cập nhật người quản lý cho một user.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $userId
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function updateManager(Request $request, $userId)
+    {
+        // Xác thực đầu vào (manager_id phải tồn tại và là số)
+        $request->validate([
+            'manager_id' => 'nullable|exists:users,id'
+        ]);
+
+        // Tìm user theo id
+        $user = User::find($userId);
+
+        // Nếu không tìm thấy user thì trả về lỗi 404
+        if (!$user) {
+            return response()->json([
+                'message' => 'Không tìm thấy user.'
+            ], 404);
+        }
+
+        // Cập nhật manager_id cho user
+        $user->manager_id = $request->input('manager_id');
+        $user->save();
+
+        return response()->json([
+            'message' => 'Cập nhật người quản lý thành công.',
+            'user' => $user
+        ]);
+    }
+
+    public function getManagerName($userId)
+    {
+        // Tìm user theo id
+        $user = User::find($userId);
+
+        // Nếu không tìm thấy user thì trả về lỗi 404
+        if (!$user) {
+            return response()->json([
+                'message' => 'Không tìm thấy user.'
+            ], 404);
+        }
+
+        // Tìm người quản lý của user
+        $manager = User::find($user->manager_id);
+
+        // Nếu không tìm thấy người quản lý thì trả về lỗi 404
+        if (!$manager) {
+            return response()->json([
+                'message' => 'Không tìm thấy người quản lý.'
+            ], 404);
+        }
+
+        return response()->json([
+            'manager_name' => $manager->name
+        ]);
+    }
 }

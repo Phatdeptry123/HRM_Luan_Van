@@ -1,63 +1,63 @@
 import api from './api.service'
 
-class UserService {
-  async getUsers() {
+class RequestService {
+  async getRequests() {
     try {
-      const response = await api.get('/users')
+      const response = await api.get('/requests')
       return response.data
     } catch (error) {
       return Promise.reject(error)
     }
   }
 
-  async updateUser(id, data) {
+  async updateRequest(id, data) {
     try {
-      const response = await api.put(`/users/update/${id}`, data)
+      const response = await api.put(`/requests/update/${id}`, data)
       return response.data
     } catch (error) {
       return Promise.reject(error)
     }
   }
 
-  async addUser(data) {
+  async addRequest(data) {
     try {
-      const response = await api.post('/users/store', data)
+      const response = await api.post('/requests', data)
       return response.data
     } catch (error) {
       return Promise.reject(error)
     }
   }
 
-  async deleteUser(id) {
+  async getRequestsForUser(id) {
     try {
-      const response = await api.delete(`/users/delete/${id}`)
+      const response = await api.get(`/requests/user/${id}`)
       return response.data
     } catch (error) {
       return Promise.reject(error)
     }
   }
 
-  async getUser(id) {
+  async getRequestsForManager(id) {
     try {
-      const response = await api.get(`/users/${id}`)
+      const response = await api.get(`/requests/manager/${id}`)
       return response.data
     } catch (error) {
       return Promise.reject(error)
     }
   }
 
-  async getManagerName(id) {
+  async approveRequest(id) {
     try {
-      const response = await api.get(`/users/get-managerName/${id}`)
+      const response = await api.put(`/requests/approve/${id}`)
       return response.data
     } catch (error) {
       return Promise.reject(error)
     }
   }
 
-  async getUserName(id) {
+  async rejectRequest(id) {
     try {
-      const response = await api.get(`/users/get-userName/${id}`)
+      const response = await api.put(`/requests/reject/${id}`)
       return response.data
     } catch (error) {
       return Promise.reject(error)
@@ -65,4 +65,4 @@ class UserService {
   }
 }
 
-export default new UserService()
+export default new RequestService()

@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
-
+use Illuminate\Database\Eloquent\Relations\HasMany;
 class User extends Authenticatable implements JWTSubject
 {
     use HasFactory, Notifiable;
@@ -26,6 +26,7 @@ class User extends Authenticatable implements JWTSubject
         'address', // Thêm cột address
         'birthday', // Thêm cột birthday
         'role', // Thêm cột role
+        'manager_id', // Thêm cột manager_id
     ];
 
     /**
@@ -77,9 +78,9 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasMany(Salary::class);
     }
 
-    public function managedRequests()
+    public function managedUsers(): HasMany
     {
-        return $this->hasMany(Request::class, 'manager_id');
+        return $this->hasMany(User::class, 'manager_id');
     }
 
 }

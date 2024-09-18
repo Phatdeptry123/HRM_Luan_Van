@@ -4,6 +4,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\UserController;
+use App\Http\Controllers\API\ManagerController;
+use App\Http\Controllers\API\RequestController;
+
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
@@ -28,4 +31,29 @@ Route::group([
     Route::get('/{id}', [UserController::class, 'show']);
     Route::put('/update/{id}', [UserController::class, 'update']);
     Route::delete('/delete/{id}', [UserController::class, 'destroy']);
+    Route::put('/{id}/update-manager', [UserController::class, 'updateManager']);
+    Route::get('/get-managerName/{id}', [UserController::class, 'getManagerName']);
+});
+
+Route::group([
+    'middleware' => 'api',
+    'prefix' => 'managers'
+], function ($router) {
+    Route::get('/', [ManagerController::class, 'index']);
+    Route::get('/{id}/subordinates', [ManagerController::class, 'getSubordinates']);
+    Route::get('/managers-with-subordinates', [ManagerController::class, 'getManagersWithSubordinates']);
+    Route::post('/{id}/add-subordinate', [ManagerController::class, 'addSubordinate']);
+});
+
+Route::group([
+    'middleware' => 'api',
+    'prefix' => 'requests'
+], function ($router) {
+    Route::get('/', [RequestController::class, 'index']);
+    Route::post('/', [RequestController::class, 'store']);
+    Route::get('/{id}', [RequestController::class, 'show']);
+    Route::put('/approve/{id}', [RequestController::class, 'approve']);
+    Route::put('/reject/{id}', [RequestController::class, 'reject']);
+    Route::get('/user/{id}', [RequestController::class, 'getRequestsForUser']);
+    Route::get('/manager/{id}', [RequestController::class, 'getRequestsForManager']);
 });

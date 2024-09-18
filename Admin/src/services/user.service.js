@@ -45,6 +45,15 @@ class UserService {
       return Promise.reject(error)
     }
   }
+
+  async updateManager(id, data) {
+    try {
+      const response = await api.put(`/users/${id}/update-manager`, data)
+      return response.data
+    } catch (error) {
+      return Promise.reject(error)
+    }
+  }
 }
 
 export default new UserService()

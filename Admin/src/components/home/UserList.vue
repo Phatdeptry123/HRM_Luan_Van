@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1 class="text-4xl font-bold text-center mt-10">Home View</h1>
+    <h1 class="text-4xl font-bold text-center mt-10">Danh sách Nhân Viên</h1>
     <table class="min-w-full bg-white border border-gray-200">
       <thead>
         <tr>
@@ -8,7 +8,7 @@
           <th class="py-2 px-4 border-b">Tên</th>
           <th class="py-2 px-4 border-b">Email</th>
           <th class="py-2 px-4 border-b">Số điện thoại</th>
-          <th class="py-2 px-4 border-b">Vai trò</th>
+          <th class="py-2 px-4 border-b">Chức vụ</th>
           <th class="py-2 px-4 border-b">Hành động</th>
         </tr>
       </thead>
@@ -33,6 +33,12 @@
               >
                 Xóa
               </button>
+              <button
+                class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 focus:outline-none"
+                @click="editManager(user.id)"
+              >
+                Sửa người quản lí
+              </button>
             </div>
           </td>
         </tr>
@@ -47,6 +53,9 @@
     <BaseFormModal v-if="isVisibleUpdate">
       <updateUserModal :userId="currentUser" @closeUpdate="handleClose" />
     </BaseFormModal>
+    <BaseFormModal v-if="isVisibleUpdateManager">
+      <UpdateManager :users="users" :userId="currentUser" @closeUpdate="handleCloseUpdateManager" />
+    </BaseFormModal>
   </div>
 </template>
 
@@ -56,6 +65,7 @@ import userServices from '@/services/user.service' // Đổi đường dẫn n�
 import BaseFormModal from '../modal/BaseFormModal.vue'
 import addUserModal from '../modal/user/AddUserModal.vue'
 import updateUserModal from '../modal/user/UpdateUserModal.vue'
+import UpdateManager from '@/components/home/onlevel/UpdateManager.vue'
 import Swal from 'sweetalert2'
 const users = ref([])
 const currentUser = ref({})
@@ -72,10 +82,13 @@ const fetchUsers = async () => {
 const isVisible = ref(false)
 const isVisibleUpdate = ref(false)
 
-const handleClose = () => {  
+const handleClose = () => {
   isVisible.value = false
   isVisibleUpdate.value = false
   fetchUsers()
+}
+const handleCloseUpdateManager = () => {
+  isVisibleUpdateManager.value = false
 }
 
 const openModal = () => {
@@ -84,6 +97,12 @@ const openModal = () => {
 const editUser = (id) => {
   currentUser.value = id
   isVisibleUpdate.value = true
+}
+
+const isVisibleUpdateManager = ref(false)
+const editManager = (id) => {
+  currentUser.value = id
+  isVisibleUpdateManager.value = true
 }
 
 const deleteUser = async (id) => {
