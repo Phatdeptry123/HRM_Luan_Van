@@ -6,6 +6,7 @@ use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\UserController;
 use App\Http\Controllers\API\ManagerController;
 use App\Http\Controllers\API\RequestController;
+use App\Http\Controllers\API\AttendanceController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -56,4 +57,11 @@ Route::group([
     Route::put('/reject/{id}', [RequestController::class, 'reject']);
     Route::get('/user/{id}', [RequestController::class, 'getRequestsForUser']);
     Route::get('/manager/{id}', [RequestController::class, 'getRequestsForManager']);
+});
+
+Route::group([
+    'middleware' => 'api',
+    'prefix' => 'attendance'
+], function ($router) {
+Route::post('/{username}', [AttendanceController::class, 'checkAttendance']);
 });

@@ -98,6 +98,11 @@
           {{ errors.social_insurance }}
         </p>
       </div>
+
+      <div class="mb-4">
+        Đăng ký khuôn mặt
+        <input type="file" />
+      </div>
       <div class="mb-4">
         <label class="block text-gray-700">Phân quyền:</label>
         <div class="radio-group">

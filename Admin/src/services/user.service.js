@@ -54,6 +54,15 @@ class UserService {
       return Promise.reject(error)
     }
   }
+
+  async updateFace(id, data) {
+    try {
+      const response = await api.put(`/users/${id}/update-face`, data)
+      return response.data
+    } catch (error) {
+      return Promise.reject(error)
+    }
+  }
 }
 
 export default new UserService()

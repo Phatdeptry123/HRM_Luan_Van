@@ -27,6 +27,8 @@ class User extends Authenticatable implements JWTSubject
         'birthday', // Thêm cột birthday
         'role', // Thêm cột role
         'manager_id', // Thêm cột manager_id
+        'avatar_img_url', // thêm cột avatar_img_url
+        'face_img_url',   // thêm cột face_img_url
     ];
 
     /**
@@ -81,6 +83,11 @@ class User extends Authenticatable implements JWTSubject
     public function managedUsers(): HasMany
     {
         return $this->hasMany(User::class, 'manager_id');
+    }
+
+    public function attendances(): HasMany
+    {
+        return $this->hasMany(Attendance::class);
     }
 
 }

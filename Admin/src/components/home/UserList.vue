@@ -39,6 +39,12 @@
               >
                 Sửa người quản lí
               </button>
+              <button
+                class="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 focus:outline-none"
+                @click="editFace(user.id)"
+              >
+                Cập nhật khuôn mặt
+              </button>
             </div>
           </td>
         </tr>
@@ -56,6 +62,9 @@
     <BaseFormModal v-if="isVisibleUpdateManager">
       <UpdateManager :users="users" :userId="currentUser" @closeUpdate="handleCloseUpdateManager" />
     </BaseFormModal>
+    <BaseFormModal v-if="isVisibleUpdateFace">
+      <UpdateFaceModal :userId="currentUser" @closeUpdateFace="handleCloseUpdateFace" />
+    </BaseFormModal>
   </div>
 </template>
 
@@ -66,6 +75,7 @@ import BaseFormModal from '../modal/BaseFormModal.vue'
 import addUserModal from '../modal/user/AddUserModal.vue'
 import updateUserModal from '../modal/user/UpdateUserModal.vue'
 import UpdateManager from '@/components/home/onlevel/UpdateManager.vue'
+import UpdateFaceModal from '../modal/user/UpdateFaceModal.vue'
 import Swal from 'sweetalert2'
 const users = ref([])
 const currentUser = ref({})
@@ -114,6 +124,15 @@ const deleteUser = async (id) => {
   }
 }
 
+const isVisibleUpdateFace = ref(false)
+const editFace = (id) => {
+  currentUser.value = id
+  isVisibleUpdateFace.value = true
+}
+
+const handleCloseUpdateFace = () => {
+  isVisibleUpdateFace.value = false
+}
 onMounted(fetchUsers)
 </script>
 
