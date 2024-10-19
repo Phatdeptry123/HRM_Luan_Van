@@ -4,70 +4,38 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller as Controller;
 use App\Models\Salary;
+use App\Models\SalaryDetail;
 use App\Models\User;
 use Illuminate\Http\Request;
 
 class SalaryController extends Controller
 {
-    /**
-     * Hiển thị danh sách lương.
-     */
-    public function index()
+    public function getSalaryByUserId($id)
     {
-        $salaries = Salary::with('user')->get();
+        $salaries = Salary::where('user_id', $id)->with('user')->get();
         return response()->json($salaries);
     }
 
-    /**
-     * Lưu lương mới.
-     */
-    public function store(Request $request)
+    public function index()
     {
-        $validatedData = $request->validate([
-            'user_id' => 'required|exists:users,id',
-            'basic_salary' => 'required|numeric',
-            'bonus' => 'nullable|numeric',
-            'tax' => 'nullable|numeric',
-            'social_insurance' => 'nullable|numeric',
-            'deductions' => 'nullable|numeric',
-            'deduction_description' => 'nullable|string',
-            'total_salary' => 'required|numeric',
-            'salary_date' => 'required|date',
-        ]);
-
-        $salary = Salary::create($validatedData);
-
-        return response()->json($salary, 201);
+        $salaries = Salary::with(['user', 'user.attendances', 'user.requests', 'user.overtime'])->get();
+        return response()->json($salaries);
     }
 
-    /**
-     * Cập nhật lương.
-     */
-    public function update(Request $request, Salary $salary)
+    public function creatOrUpdateBasicSalary(Request $request)
     {
-        $validatedData = $request->validate([
-            'basic_salary' => 'required|numeric',
-            'bonus' => 'nullable|numeric',
-            'tax' => 'nullable|numeric',
-            'social_insurance' => 'nullable|numeric',
-            'deductions' => 'nullable|numeric',
-            'deduction_description' => 'nullable|string',
-            'total_salary' => 'required|numeric',
-            'salary_date' => 'required|date',
-        ]);
+        $user = User::find($request->user_id);
+        if (!$user) {
+            return response()->json(['error' => 'User not found'], 404);
+        }
 
-        $salary->update($validatedData);
+        $salary = Salary::where('user_id', $request->user_id)->first();
+        if ($salary) {
+            $salary->update($request->all());
+        } else {
+            $salary = Salary::create($request->all());
+        }
 
         return response()->json($salary);
-    }
-
-    /**
-     * Xóa lương.
-     */
-    public function destroy(Salary $salary)
-    {
-        $salary->delete();
-
-        return response()->json(null, 204);
     }
 }

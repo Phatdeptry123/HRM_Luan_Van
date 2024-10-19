@@ -2,7 +2,7 @@ import axios from 'axios'
 import { useUserStore } from '@/stores/user'
 import AuthService from '@/services/auth.service'
 import router from '@/router/index'
-
+import Swal from 'sweetalert2'
 const api = axios.create({
   baseURL: 'http://localhost:8000/api/',
   headers: {
@@ -60,7 +60,6 @@ api.interceptors.response.use(
           })
           // If the refresh token request fails, handle the error
           .catch((refreshError) => {
-            alert('Your login session has ended, please log in again.')
             userStore.clearUser()
             router.push('/login')
             if (refreshError.response?.status !== 401) {
@@ -78,7 +77,12 @@ api.interceptors.response.use(
     } else if (status === 403) {
       alert('You are forbidden to access this resource.')
     } else if (status === 411) {
-      alert('Your login session has ended, please log in again.')
+      Swal.fire({
+        title: 'Thông báo',
+        text: 'Đã hết phiên làm việc, vui lòng đăng nhập lại.',
+        icon: 'warning',
+        confirmButtonText: 'OK'
+      })
       userStore.clearUser()
       router.push('/login')
     }

@@ -1,5 +1,5 @@
 <template>
-  <div class="p-4 mx-auto bg-white mt-3 scroll-auto">
+  <div class="p-4 mx-auto bg-teal-50 mt-3 scroll-auto">
     <h2 class="text-xl font-semibold mb-4">
       Cập nhật người quản lí của
       <span class="text-xl font-semibold mb-4 text-red-600">
@@ -12,7 +12,7 @@
         <select
           id="manager"
           v-model="selectedManagerId"
-          class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+          class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-teal-50 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
         >
           <option value="" disabled>Chọn người quản lí</option>
           <option v-for="user in users" :key="user.id" :value="user.id">
@@ -22,14 +22,8 @@
       </div>
 
       <div class="flex justify-end">
-        <button
-          type="button"
-          @click="handleCloseUpdate"
-          class="bg-gray-500 text-white py-2 px-4 rounded mr-2"
-        >
-          Hủy
-        </button>
-        <button type="submit" class="bg-blue-500 text-white py-2 px-4 rounded">Cập nhật</button>
+        <BaseLightButton type="button" @click="handleCloseUpdate"> Hủy </BaseLightButton>
+        <BaseDarkButton type="submit">Cập nhật</BaseDarkButton>
       </div>
     </form>
   </div>

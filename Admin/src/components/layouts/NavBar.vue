@@ -1,6 +1,6 @@
 <template>
   <header
-    class="header sticky top-0 bg-white shadow-md flex items-center px-8 py-2 w-full"
+    class="header sticky top-0 bg-teal-100 shadow-md flex items-center px-8 py-2 w-full"
     style="z-index: 1"
   >
     <div class="flex items-center w-6/12 md:w-3/12">
@@ -28,13 +28,21 @@
         <li
           class="p-4 border-b-2 border-green-500 border-opacity-0 hover:border-opacity-100 hover:text-green-500 duration-200 cursor-pointer"
         >
-          <router-link to="/">Home</router-link>
+          <router-link to="/">Trang Chủ</router-link>
+        </li>
+        <li
+          class="p-4 border-b-2 border-green-500 border-opacity-0 hover:border-opacity-100 hover:text-green-500 duration-200 cursor-pointer"
+        >
+          <router-link to="/payslips">Tạo phiếu lương tháng</router-link>
         </li>
       </ul>
     </nav>
 
     <!-- mobile menu -->
-    <nav v-if="isMobileMenuOpen" class="absolute top-16 left-0 w-full bg-white shadow-md md:hidden">
+    <nav
+      v-if="isMobileMenuOpen"
+      class="absolute top-16 left-0 w-full bg-teal-50 shadow-md md:hidden"
+    >
       <ul class="flex flex-col items-center">
         <li class="p-4 w-full text-center border-b">
           <router-link to="/" @click="toggleMobileMenu">Home</router-link>

@@ -72,7 +72,7 @@ export default {}
 }
 
 .base-form-modal-content {
-  background-color: white;
+  background-color: #f0fdfa;
   padding: 2rem;
   border-radius: 0.5rem;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);

@@ -1,7 +1,7 @@
 <template>
   <div class="min-h-screen flex items-center justify-center w-full bg-gray-100">
-    <div class="bg-white shadow-md rounded-lg px-8 py-6 max-w-md">
-      <h1 class="text-2xl font-bold text-center mb-4 text-gray-900">Welcome Back!</h1>
+    <div class="bg-teal-50 shadow-md rounded-lg px-8 py-6 max-w-md">
+      <h1 class="text-2xl font-bold text-center mb-4 text-gray-900">Hệ Thống HMR</h1>
       <ValidationForm @submit="handleSubmit">
         <!-- show login error -->
         <div v-if="loginError" class="mb-4 text-red-500 text-sm text-center">
@@ -11,7 +11,7 @@
         <!-- Email or Username -->
         <div class="mb-4 w-80">
           <label for="emailOrUsername" class="block text-sm font-medium text-gray-700 mb-2"
-            >Email Address or Username</label
+            >Email</label
           >
           <Field
             v-model="emailOrUsername"
@@ -20,7 +20,7 @@
             id="emailOrUsername"
             rules="required"
             class="shadow-sm rounded-md w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-            placeholder="your@email.com or username"
+            placeholder="nhập email của bạn"
           />
           <ErrorMessage name="emailOrUsername" class="mt-1 text-red-500 text-sm" />
         </div>
@@ -28,7 +28,7 @@
         <!-- Password -->
         <div class="mb-4 w-80 relative">
           <label for="password" class="block text-sm font-medium text-gray-700 mb-2"
-            >Password</label
+            >Mật Khẩu</label
           >
           <div class="relative w-80">
             <Field
@@ -38,7 +38,7 @@
               id="password"
               :rules="{ required: true }"
               class="shadow-sm rounded-md w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-              placeholder="Enter your password"
+              placeholder="nhập mật khẩu của bạn"
             />
             <button
               type="button"
@@ -114,7 +114,10 @@ export default {
         const response = await AuthService.login(values.emailOrUsername, values.password)
         const { access_token, refresh_token, user } = response.data
         console.log('response:', response)
-
+        if (response.data.user.role !== 1) {
+          this.loginError = 'You are not authorized to access this page.'
+          return
+        }
         this.userStore.setToken(access_token)
         this.userStore.setRefreshToken(refresh_token)
         this.userStore.setUser(user)

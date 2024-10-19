@@ -6,6 +6,8 @@ import { createVfm } from 'vue-final-modal'
 import VueSweetalert2 from 'vue-sweetalert2'
 import Swal from 'sweetalert2' // Import Swal từ sweetalert2
 import 'sweetalert2/dist/sweetalert2.min.css'
+import BaseDarkButton from '@/components/common/BaseDarkButton.vue'
+import BaseLightButton from '@/components/common/BaseLightButton.vue'
 
 import './assets/main.css'
 import './index.css'
@@ -17,6 +19,8 @@ const vfm = createVfm()
 const app = createApp(App)
 setupVeeValidate(app)
 app.component('font-awesome-icon', FontAwesomeIcon)
+app.component('base-dark-button', BaseDarkButton)
+app.component('base-light-button', BaseLightButton)
 app.use(createPinia())
 app.use(router)
 app.use(vfm)

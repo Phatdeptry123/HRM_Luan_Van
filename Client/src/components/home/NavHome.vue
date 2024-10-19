@@ -24,11 +24,11 @@ const router = useRouter()
 
 const menuItems = [
   { label: 'Hồ sơ', icon: 'user', color: 'text-red-500', route: '/profile' },
-  { label: 'Bảng lương', icon: 'wallet', color: 'text-blue-500', route: '/payroll' },
+  { label: 'Bảng lương', icon: 'wallet', color: 'text-blue-500', route: '/salary' },
   { label: 'Chấm công', icon: 'clock', color: 'text-green-500', route: '/attendance' },
   { label: 'Timeoff', icon: 'bolt', color: 'text-yellow-500', route: '/timeoff' },
   { label: 'Việc cần làm', icon: 'check', color: 'text-purple-500', route: '/tasks' },
-  { label: 'Mục tiêu', icon: 'bullseye', color: 'text-pink-500', route: '/goals' },
+  { label: 'Tăng ca', icon: 'bullseye', color: 'text-pink-500', route: '/overtime' },
   { label: 'Sự nghiệp', icon: 'briefcase', color: 'text-teal-500', route: '/career' },
   { label: 'Quy định làm việc', icon: 'gavel', color: 'text-orange-500', route: '/policies' }
 ]

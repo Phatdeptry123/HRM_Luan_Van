@@ -7,6 +7,9 @@ use App\Http\Controllers\API\UserController;
 use App\Http\Controllers\API\ManagerController;
 use App\Http\Controllers\API\RequestController;
 use App\Http\Controllers\API\AttendanceController;
+use App\Http\Controllers\API\SalaryController;
+use App\Http\Controllers\API\OvertimeController;
+use App\Http\Controllers\API\MonthlySalaryController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -61,7 +64,47 @@ Route::group([
 
 Route::group([
     'middleware' => 'api',
+    'prefix' => 'overtimes'
+], function ($router) {
+    Route::get('/', [OvertimeController::class, 'index']);
+    Route::post('/', [OvertimeController::class, 'store']);
+    Route::get('/{id}', [OvertimeController::class, 'show']);
+    Route::put('/approve/{id}', [OvertimeController::class, 'approve']);
+    Route::put('/reject/{id}', [OvertimeController::class, 'reject']);
+    Route::get('/user/{id}', [OvertimeController::class, 'overtimeList']);
+    Route::get('/manager/{id}', [OvertimeController::class, 'getOvertimeRequestsForManager']);
+});
+
+Route::group([
+    'middleware' => 'api',
     'prefix' => 'attendance'
 ], function ($router) {
+    Route::get('/{id}/get-attendance-by-user-id', [AttendanceController::class, 'getAttendanceByUserId']);
+Route::get('/{username}', [AttendanceController::class, 'index']);
 Route::post('/{username}', [AttendanceController::class, 'checkAttendance']);
+});
+
+Route::group([
+    'middleware' => 'api',
+    'prefix' => 'salary'
+], function ($router) {
+    Route::get('/{id}/get-salary-by-user-id', [SalaryController::class, 'getSalaryByUserId']);
+    Route::get('/', [SalaryController::class, 'index']);
+    Route::post('/create-or-update-basic-salary', [SalaryController::class, 'creatOrUpdateBasicSalary']);
+});
+
+Route::group([
+    'middleware' => 'api',
+    'prefix' => 'monthly-salary'
+], function ($router) {
+    Route::get('/get-monthly-salary-by-month-and-year', [MonthlySalaryController::class, 'getMonthlySalaryByMonthAndYear']);
+    Route::get('/{id}/get-monthly-salary-by-user-id', [MonthlySalaryController::class, 'getMonthlySalaryByUserId']);
+    Route::get('/', [MonthlySalaryController::class, 'index']);
+    Route::post('/', [MonthlySalaryController::class, 'store']);
+    Route::get('/{id}', [MonthlySalaryController::class, 'show']);
+    Route::put('/{id}', [MonthlySalaryController::class, 'update']);
+    
+    //createMonthlySalaryForUsers
+    Route::post('/create-monthly-salary-for-users', [MonthlySalaryController::class, 'createMonthlySalaryForUsers']);
+    //getMonthlySalaryByMonthAndYear
 });

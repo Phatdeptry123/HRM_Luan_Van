@@ -1,14 +1,14 @@
 <template>
-    <div class="base-form-modal-overlay" @click.self="handleClose">
-      <div class="base-form-modal-content">
-        <slot></slot>
-      </div>
+  <div class="base-form-modal-overlay" @click.self="handleClose">
+    <div class="base-form-modal-content">
+      <slot></slot>
     </div>
-  </template>
+  </div>
+</template>
 
 <script>
 export default {
-
+  // Thêm logic nếu cần
 }
 </script>
 
@@ -80,5 +80,7 @@ export default {
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
   width: 100%;
   max-width: 600px; /* Độ rộng tối đa của modal */
+  max-height: 80vh; /* Chiều cao tối đa của modal */
+  overflow-y: auto; /* Cho phép cuộn dọc */
 }
 </style>

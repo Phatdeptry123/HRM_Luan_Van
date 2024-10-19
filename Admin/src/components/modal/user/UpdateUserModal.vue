@@ -1,5 +1,5 @@
 <template>
-  <div class="p-4 mx-auto bg-white mt-3 scroll-auto">
+  <div class="p-4 mx-auto bg-teal-50 mt-3 scroll-auto">
     <h2 class="text-xl font-semibold mb-4">Cập nhật thông tin người dùng</h2>
     <form @submit.prevent="submitUpdateUser">
       <div class="mb-4">
@@ -74,29 +74,6 @@
         />
         <p v-if="errors.basic_salary" class="text-red-500 text-sm">{{ errors.basic_salary }}</p>
       </div>
-      <div class="mb-4">
-        <label for="tax" class="block text-gray-700">Thuế:</label>
-        <input
-          v-model="currentUser.salaries.tax"
-          id="tax"
-          type="number"
-          class="border rounded w-full py-2 px-3"
-        />
-        <p v-if="errors.tax" class="text-red-500 text-sm">{{ errors.tax }}</p>
-      </div>
-      <div class="mb-4">
-        <label for="social_insurance" class="block text-gray-700">Bảo hiểm xã hội:</label>
-        <input
-          v-model="currentUser.salaries.social_insurance"
-          id="social_insurance"
-          type="number"
-          class="border rounded w-full py-2 px-3"
-        />
-        <p v-if="errors.social_insurance" class="text-red-500 text-sm">
-          {{ errors.social_insurance }}
-        </p>
-      </div>
-      <!-- Kết thúc các trường thông tin lương -->
 
       <div class="mb-4">
         <label class="block text-gray-700">Phân quyền:</label>

@@ -90,4 +90,14 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasMany(Attendance::class);
     }
 
+    public function requests(): HasMany
+    {
+        return $this->hasMany(Request::class);
+    }
+
+    public function overtime(): HasMany
+    {
+        return $this->hasMany(Overtime::class);
+    }
+
 }

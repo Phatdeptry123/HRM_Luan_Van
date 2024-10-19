@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-screen flex items-center justify-center w-full bg-gray-100">
-    <div class="bg-white p-8 rounded shadow-md w-full max-w-md">
+    <div class="bg-teal-50 p-8 rounded shadow-md w-full max-w-md">
       <h2 class="text-2xl font-bold mb-6 text-gray-900 text-center">Register</h2>
       <form @submit.prevent="handleSubmit">
         <!-- Name -->

@@ -1,7 +1,8 @@
 <template>
   <div>
-    <h1 class="text-4xl font-bold text-center mt-10">Danh sách Nhân Viên</h1>
-    <table class="min-w-full bg-white border border-gray-200">
+    <h1 class="text-4xl font-bold text-center mt-10 mb-5">Danh sách Nhân Viên</h1>
+    <BaseDarkButton @click="openModal" class="float-right mb-2"> Thêm người dùng </BaseDarkButton>
+    <table class="min-w-full bg-teal-100 rounded-lg">
       <thead>
         <tr>
           <th class="py-2 px-4 border-b">ID</th>
@@ -15,44 +16,30 @@
       <tbody>
         <tr v-for="user in users" :key="user.id">
           <td class="py-2 px-4 border-b">{{ user.id }}</td>
-          <td class="py-2 px-4 border-b">{{ user.name }}</td>
+          <td class="py-2 px-4 border-b">{{ user.name }} - {{ user.username }}</td>
           <td class="py-2 px-4 border-b">{{ user.email }}</td>
           <td class="py-2 px-4 border-b">{{ user.phone }}</td>
           <td class="py-2 px-4 border-b">{{ user.duty }}</td>
           <td class="py-2 px-4 border-b">
             <div class="flex space-x-2">
-              <button
-                @click="editUser(user.id)"
-                class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 focus:outline-none"
-              >
-                Sửa
-              </button>
-              <button
-                @click="deleteUser(user.id)"
-                class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 focus:outline-none"
-              >
-                Xóa
-              </button>
-              <button
-                class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 focus:outline-none"
-                @click="editManager(user.id)"
-              >
-                Sửa người quản lí
-              </button>
-              <button
-                class="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 focus:outline-none"
-                @click="editFace(user.id)"
-              >
-                Cập nhật khuôn mặt
-              </button>
+              <BaseLightButton @click="editUser(user.id)">Sửa</BaseLightButton>
+
+              <BaseLightButton @click="editManager(user.id)"> Sửa quản lí </BaseLightButton>
+              <BaseLightButton @click="editFace(user.id)"> Cập nhật khuôn mặt </BaseLightButton>
+
+              <BaseLightButton @click="checkinHistory(user.id)">
+                Lịch sử chấm công
+              </BaseLightButton>
+
+              <BaseLightButton>
+                <router-link :to="`/salary/${user.id}`">Quản lý lương</router-link>
+              </BaseLightButton>
+              <BaseLightButton @click="deleteUser(user.id)"> Xóa </BaseLightButton>
             </div>
           </td>
         </tr>
       </tbody>
     </table>
-    <button @click="openModal" class="mt-4 bg-blue-500 text-white py-2 px-4 rounded">
-      Thêm người dùng
-    </button>
     <BaseFormModal v-if="isVisible">
       <addUserModal @close="handleClose" />
     </BaseFormModal>
@@ -65,6 +52,10 @@
     <BaseFormModal v-if="isVisibleUpdateFace">
       <UpdateFaceModal :userId="currentUser" @closeUpdateFace="handleCloseUpdateFace" />
     </BaseFormModal>
+
+    <BaseBigModal v-if="isVisibleCheckinHistory">
+      <CheckinHistoryModal :userId="currentUser" @closeCheckinHistory="handleCloseCheckinHistory" />
+    </BaseBigModal>
   </div>
 </template>
 
@@ -72,10 +63,14 @@
 import { ref, onMounted } from 'vue'
 import userServices from '@/services/user.service' // Đổi đường dẫn nếu cần
 import BaseFormModal from '../modal/BaseFormModal.vue'
+import BaseBigModal from '../modal/BaseBigModal.vue'
+import BaseLightButton from '@/components/common/BaseLightButton.vue'
+import BaseDarkButton from '@/components/common/BaseDarkButton.vue'
 import addUserModal from '../modal/user/AddUserModal.vue'
 import updateUserModal from '../modal/user/UpdateUserModal.vue'
 import UpdateManager from '@/components/home/onlevel/UpdateManager.vue'
 import UpdateFaceModal from '../modal/user/UpdateFaceModal.vue'
+import CheckinHistoryModal from '../modal/user/CheckinHistoryModal.vue'
 import Swal from 'sweetalert2'
 const users = ref([])
 const currentUser = ref({})
@@ -130,9 +125,18 @@ const editFace = (id) => {
   isVisibleUpdateFace.value = true
 }
 
+const isVisibleCheckinHistory = ref(false)
+const checkinHistory = (id) => {
+  currentUser.value = id
+  isVisibleCheckinHistory.value = true
+}
+const handleCloseCheckinHistory = () => {
+  isVisibleCheckinHistory.value = false
+}
 const handleCloseUpdateFace = () => {
   isVisibleUpdateFace.value = false
 }
+
 onMounted(fetchUsers)
 </script>
 

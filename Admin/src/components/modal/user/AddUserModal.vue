@@ -1,5 +1,5 @@
 <template>
-  <div class="p-4 mx-auto bg-white overflow-auto mt-50">
+  <div class="p-4 mx-auto bg-teal-50 overflow-auto mt-50">
     <h2 class="text-3xl font-semibold mb-4 overflow-auto text-center text-indigo-500">
       Thêm nhân viên mới
     </h2>
@@ -74,35 +74,7 @@
         />
         <p v-if="errors.basic_salary" class="text-red-500 text-sm">{{ errors.basic_salary }}</p>
       </div>
-      <!-- Thuế -->
-      <div class="mb-4">
-        <label for="tax" class="block text-gray-700">Thuế:</label>
-        <input
-          v-model="newUser.salary.tax"
-          id="tax"
-          type="number"
-          class="border rounded w-full py-2 px-3"
-        />
-        <p v-if="errors.tax" class="text-red-500 text-sm">{{ errors.tax }}</p>
-      </div>
-      <!-- Bảo hiểm xã hội -->
-      <div class="mb-4">
-        <label for="social_insurance" class="block text-gray-700">Bảo hiểm xã hội:</label>
-        <input
-          v-model="newUser.salary.social_insurance"
-          id="social_insurance"
-          type="number"
-          class="border rounded w-full py-2 px-3"
-        />
-        <p v-if="errors.social_insurance" class="text-red-500 text-sm">
-          {{ errors.social_insurance }}
-        </p>
-      </div>
 
-      <div class="mb-4">
-        Đăng ký khuôn mặt
-        <input type="file" />
-      </div>
       <div class="mb-4">
         <label class="block text-gray-700">Phân quyền:</label>
         <div class="radio-group">

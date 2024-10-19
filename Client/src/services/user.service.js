@@ -63,6 +63,15 @@ class UserService {
       return Promise.reject(error)
     }
   }
+
+  async getCheckinHistory(id) {
+    try {
+      const response = await api.get(`attendance/${id}/get-attendance-by-user-id`)
+      return response.data
+    } catch (error) {
+      return Promise.reject(error)
+    }
+  }
 }
 
 export default new UserService()

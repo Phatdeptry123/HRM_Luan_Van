@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-screen bg-gray-100 flex items-center justify-center">
-    <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
+    <div class="bg-teal-50 p-8 rounded-lg shadow-lg w-full max-w-md">
       <h1 class="text-2xl font-bold mb-6 text-center">Face Recognition</h1>
 
       <!-- Form Enroll New User -->

@@ -1,52 +1,51 @@
 <template>
   <!-- footer start -->
-  <footer class="bg-white">
+  <footer class="bg-teal-50">
     <div class="mx-auto max-w-screen-xl space-y-8 px-4 py-16 sm:px-6 lg:space-y-16 lg:px-8">
       <div class="grid grid-cols-1 gap-8 lg:grid-cols-3">
-          <div>
-            <p class="font-medium text-gray-900">Company</p>
+        <div>
+          <p class="font-medium text-gray-900">Company</p>
 
-            <ul class="mt-6 space-y-4 text-sm">
-              <li>
-                <a href="#" class="text-gray-700 transition hover:opacity-75"> About Us</a>
-              </li>
+          <ul class="mt-6 space-y-4 text-sm">
+            <li>
+              <a href="#" class="text-gray-700 transition hover:opacity-75"> About Us</a>
+            </li>
 
-              <li>
-                <a href="#" class="text-gray-700 transition hover:opacity-75"> Contact Us </a>
-              </li>
+            <li>
+              <a href="#" class="text-gray-700 transition hover:opacity-75"> Contact Us </a>
+            </li>
 
-              <li>
-                <a href="#" class="text-gray-700 transition hover:opacity-75"> Privacy Policy </a>
-              </li>
+            <li>
+              <a href="#" class="text-gray-700 transition hover:opacity-75"> Privacy Policy </a>
+            </li>
 
-              <li>
-                <a href="#" class="text-gray-700 transition hover:opacity-75"> Term & Condition </a>
-              </li>
+            <li>
+              <a href="#" class="text-gray-700 transition hover:opacity-75"> Term & Condition </a>
+            </li>
 
-              <li>
-                <a href="#" class="text-gray-700 transition hover:opacity-75"> FAQ </a>
-              </li>
+            <li>
+              <a href="#" class="text-gray-700 transition hover:opacity-75"> FAQ </a>
+            </li>
+          </ul>
+        </div>
 
-            </ul>
-          </div>
+        <div>
+          <p class="font-medium text-gray-900">Contact</p>
 
-          <div>
-            <p class="font-medium text-gray-900">Contact</p>
+          <ul class="mt-6 space-y-4 text-sm">
+            <li>
+              <p class="mb-2"><i class="fa fa-map-marker-alt me-3"></i>Hose Buliding, TP.HCM</p>
+            </li>
 
-            <ul class="mt-6 space-y-4 text-sm">
-              <li>
-                <p class="mb-2"><i class="fa fa-map-marker-alt me-3"></i>Hose Buliding, TP.HCM</p>
-              </li>
+            <li>
+              <p class="mb-2"><i class="fa fa-phone-alt me-3"></i>+098 345 67890</p>
+            </li>
 
-              <li>
-                <p class="mb-2"><i class="fa fa-phone-alt me-3"></i>+098 345 67890</p>
-              </li>
-
-              <li>
-                <p class="mb-2"><i class="fa fa-envelope me-3"></i>info@hopee.com.vn</p>
-              </li>
-            </ul>
-            <ul class="mt-8 flex gap-6">
+            <li>
+              <p class="mb-2"><i class="fa fa-envelope me-3"></i>info@hopee.com.vn</p>
+            </li>
+          </ul>
+          <ul class="mt-8 flex gap-6">
             <li>
               <a
                 href="#"
@@ -101,7 +100,7 @@
                 </svg>
               </a>
             </li>
-              
+
             <li>
               <a
                 href="#"
@@ -121,9 +120,9 @@
               </a>
             </li>
           </ul>
-          </div>
+        </div>
 
-          <div>
+        <div>
           <p class="front-medium text-gray-900">Follow Us</p>
           <ul class="mt-8 flex gap-6">
             <li>
@@ -180,7 +179,7 @@
                 </svg>
               </a>
             </li>
-              
+
             <li>
               <a
                 href="#"
@@ -203,14 +202,14 @@
         </div>
       </div>
       <div class="container-fluid copyright">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-md-6 text-left text-md-start mb-3 mb-md-0">
-                            &copy; <a href="#">Your Site Name</a>, All Right Reserved.
-                        </div>
-                    </div>
-                </div>
+        <div class="container">
+          <div class="row">
+            <div class="col-md-6 text-left text-md-start mb-3 mb-md-0">
+              &copy; <a href="#">Your Site Name</a>, All Right Reserved.
             </div>
+          </div>
+        </div>
+      </div>
     </div>
   </footer>
   <!-- footer end -->

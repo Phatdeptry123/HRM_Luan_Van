@@ -28,6 +28,21 @@ const router = createRouter({
       path: '/timeoff',
       name: 'timeoff',
       component: () => import('@/views/TimeOff.vue')
+    },
+    {
+      path: '/overtime',
+      name: 'overtime',
+      component: () => import('@/components/overtime/overtime.vue')
+    },
+    {
+      path: '/attendance',
+      name: 'attendance',
+      component: () => import('@/components/attendance/Attendance.vue')
+    },
+    {
+      path: '/salary',
+      name: 'salary',
+      component: () => import('@/components/salary/Salary.vue')
     }
   ]
 })
@@ -37,7 +52,6 @@ router.beforeEach((to, from, next) => {
   const userStore = useUserStore()
 
   if (authRequired && !userStore.token) {
-    alert('You are not authorized to access this or session has ended. Please log in again.')
     return next({ path: '/login', query: { returnUrl: to.fullPath } })
   }
   next()

@@ -9,6 +9,28 @@ use Illuminate\Http\Request;
 
 class AttendanceController extends Controller
 {
+    public function index()
+    {
+        $attendances = Attendance::with('user')->get();
+        return response()->json($attendances);
+    }
+
+    public function getAttendanceByUserId($id)
+    {
+        $attendances = Attendance::where('user_id', $id)->with('user')->get();
+        return response()->json($attendances);
+    }
+
+    public function show($id)
+    {
+        $attendance = Attendance::with('user')->find($id);
+
+        if ($attendance) {
+            return response()->json($attendance);
+        }
+
+        return response()->json(['message' => 'Attendance not found'], 404);
+    }
     public function store(Request $request)
     {
         // Tìm người dùng theo username
