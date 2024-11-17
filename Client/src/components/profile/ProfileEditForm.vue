@@ -80,6 +80,20 @@
       <ErrorMessage name="address" class="text-red-500 text-xs mt-1" />
       <div v-if="errors.address" class="mt-4 text-red-500">{{ errors.address }}</div>
     </div>
+    <div class="mb-4">
+      <label for="avatar" class="block text-gray-700 text-sm font-bold mb-2">avatar</label>
+      <Field
+        name="avatar"
+        type="file"
+        id="avatar"
+        class="input input-bordered"
+        placeholder="avatar"
+        rules="required"
+        v-model="form.avatar"
+      />
+      <ErrorMessage name="avatar" class="text-red-500 text-xs mt-1" />
+      <div v-if="errors.avatar" class="mt-4 text-red-500">{{ errors.avatar }}</div>
+    </div>
 
     <!-- Submit and Cancel Buttons -->
     <div class="flex items-center justify-between mt-4">
@@ -122,7 +136,8 @@ export default {
         username: this.user.username || '',
         email: this.user.email || '',
         phone: this.user.phone || '',
-        address: this.user.address || ''
+        address: this.user.address || '',
+        avatar: this.user.avatar || ''
       }
     }
   },
@@ -133,7 +148,8 @@ export default {
         username: values.username,
         email: values.email,
         phone: values.phone,
-        address: values.address
+        address: values.address,
+        avatar: values.avatar
       }
       this.$emit('update', updateData)
     }

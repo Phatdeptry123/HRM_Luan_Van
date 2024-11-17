@@ -1,7 +1,17 @@
 <template>
   <div class="p-6 mx-auto bg-white rounded-xl shadow-md space-y-4 w-100">
-    <div class="flex items-center space-x-4 w-100">
-      <img class="h-50 w-100 rounded-full" src="../../assets/slide.png" alt="Avatar" />
+    <div class="flex items-center space-x-4 w-100 ml-52">
+      <div class="avatar">
+        <div class="w-40 rounded-full">
+          <img
+            :src="
+              user.avatar_img_url ??
+              'https://as2.ftcdn.net/v2/jpg/02/59/38/43/1000_F_259384390_LZjy7LNM3zeLSXMILA0NphvmOzUQXSuj.jpg'
+            "
+          />
+        </div>
+      </div>
+
       <div>
         <h1 class="text-4xl font-bold mt-10">Hồ sơ nhân sự</h1>
         <div class="text-xl font-medium text-black">{{ user.name }}</div>
@@ -11,7 +21,7 @@
           <i class="fas fa-briefcase"></i>
           Lương:
           <span v-if="showSalary" class="mr-1"
-            >{{ Math.floor(user.salaries[0].basic_salary).toLocaleString() }} vnđ</span
+            >{{ Math.floor(user.salaries[0]?.basic_salary).toLocaleString() }} vnđ</span
           >
           <span v-else class="mr-1">*************</span>
           <!-- Icon để ẩn/hiện mức lương -->

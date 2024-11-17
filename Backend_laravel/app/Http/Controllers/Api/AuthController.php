@@ -54,7 +54,6 @@ class AuthController extends BaseController
         // Lấy thông tin người dùng sau khi đăng nhập thành công
         $userData = auth()->user();
         $user = User::with('salaries')->find($userData->id);
-
         // Tạo refresh token
         $refreshToken = auth()->refresh();
 

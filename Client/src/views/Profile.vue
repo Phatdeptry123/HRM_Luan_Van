@@ -81,7 +81,7 @@ export default {
     },
     async updateUser(userData) {
       this.clearErrors()
-      console.log(this.user, userData)
+      // console.log(this.user, userData)
       try {
         const response = await userService.updateUser(this.user.id, userData)
         Swal.fire('Success', 'Profile updated successfully.', 'success')

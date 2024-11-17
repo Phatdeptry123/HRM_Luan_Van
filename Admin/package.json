@@ -23,6 +23,7 @@
     "date-fns": "^4.1.0",
     "pinia": "^2.1.7",
     "vee-validate": "^4.13.2",
+    "vis-network": "^9.1.9",
     "vue": "^3.4.29",
     "vue-final-modal": "^4.5.4",
     "vue-router": "^4.3.3",

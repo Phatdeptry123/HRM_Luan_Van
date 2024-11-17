@@ -122,7 +122,7 @@ const sendRequest = () => {
   const data = {
     type: currentType.value,
     description: description.value,
-    request_date: formattedDate.value,
+    request_date: date.value,
     manager_id: user.manager_id,
     user_id: user.id
   }

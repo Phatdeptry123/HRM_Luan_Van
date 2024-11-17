@@ -58,6 +58,8 @@ const captureImage = () => {
   canvasElement.height = videoElement.videoHeight
   canvasElement.getContext('2d').drawImage(videoElement, 0, 0)
 
+  console.log(canvasElement)
+
   // Convert canvas image to base64
   const imageData = canvasElement.toDataURL('image/png').replace('data:image/png;base64,', '')
 
@@ -67,13 +69,8 @@ const captureImage = () => {
 
 const sendImageToServer = async (imageData) => {
   try {
-    await fetch('http://localhost:5000/register', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ image: imageData, name: userName.value })
-    })
+    await updateUserFaceServerLaravel(imageData)
+    await registerImagePython(imageData)
     Swal.fire('Thành công', 'Đã cập nhật khuôn mặt', 'success')
     emit('closeUpdateFace')
     stopCamera()
@@ -81,6 +78,47 @@ const sendImageToServer = async (imageData) => {
     console.error('Error sending image:', error)
   }
 }
+
+// Hàm cập nhật khuôn mặt lên server laravel
+const updateUserFaceServerLaravel = async (imageData) => {
+  try {
+    // Chuyển Base64 thành Blob
+    const byteString = atob(imageData)
+    const arrayBuffer = new ArrayBuffer(byteString.length)
+    const uint8Array = new Uint8Array(arrayBuffer)
+    for (let i = 0; i < byteString.length; i++) {
+      uint8Array[i] = byteString.charCodeAt(i)
+    }
+    const blob = new Blob([uint8Array], { type: 'image/png' })
+
+    // Tạo FormData để gửi file
+    const formData = new FormData()
+    formData.append('face_image', blob, 'face_image.png')
+
+    // Gửi FormData lên server Laravel
+    await userService.updateFace(props.userId, formData)
+  } catch (error) {
+    console.error('Error updating user face:', error)
+    throw error // Ném lỗi ra để xử lý ở hàm cha
+  }
+}
+
+// Hàm gọi API để gửi ảnh lên server python
+const registerImagePython = async (imageData) => {
+  try {
+    await fetch('http://localhost:5000/register', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ image: imageData, name: userName.value })
+    })
+  } catch (error) {
+    console.error('Error registering image:', error)
+    throw error // Ném lỗi ra để xử lý ở hàm cha
+  }
+}
+
 const userName = ref('')
 const fullName = ref('')
 const fetchUserDetails = async () => {

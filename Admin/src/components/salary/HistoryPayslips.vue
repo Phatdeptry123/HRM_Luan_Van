@@ -24,6 +24,8 @@
             <th class="border px-4 py-2">Số ngày công</th>
             <th class="border px-4 py-2">Số giờ tăng ca</th>
             <th class="border px-4 py-2">Lương tăng ca</th>
+            <th class="border px-4 py-2">Đi trễ / Về sớm</th>
+            <th class="border px-4 py-2">Trừ đi trễ / Về sớm</th>
             <th class="border px-4 py-2">Thưởng</th>
             <th class="border px-4 py-2">Khấu trừ</th>
             <th class="border px-4 py-2">Thuế TNCN</th>
@@ -38,6 +40,10 @@
             <td class="border px-4 py-2">{{ salary.working_days }}</td>
             <td class="border px-4 py-2">{{ salary.overtime_hours }}</td>
             <td class="border px-4 py-2">{{ formatCurrency(salary.overtime_salary) }}</td>
+            <td class="border px-4 py-2">{{ salary.days_checkin_late_or_checkout_early }}</td>
+            <td class="border px-4 py-2">
+              {{ formatCurrency(salary.reduction_checkin_late_or_checkout_early) }}
+            </td>
             <td class="border px-4 py-2">{{ formatCurrency(salary.bonus) }}</td>
             <td class="border px-4 py-2">{{ formatCurrency(salary.reduction) }}</td>
             <td class="border px-4 py-2">{{ formatCurrency(salary.tax) }}</td>
@@ -109,6 +115,8 @@ const exportToExcel = () => {
     'Working Days': salary.working_days,
     'Overtime Hours': salary.overtime_hours,
     'Overtime Salary': salary.overtime_salary,
+    'Days Checkin Late or Checkout Early': salary.days_checkin_late_or_checkout_early,
+    'Reduction Checkin Late or Checkout Early': salary.reduction_checkin_late_or_checkout_early,
     Bonus: salary.bonus,
     Reduction: salary.reduction,
     Tax: salary.tax,

@@ -38,6 +38,31 @@ const router = createRouter({
       path: '/history-payslips',
       name: 'history-payslips',
       component: () => import('@/components/salary/HistoryPayslips.vue')
+    },
+    {
+      path: '/employments',
+      name: 'employments',
+      component: () => import('@/views/Employments.vue')
+    },
+    {
+      path: '/onlevel',
+      name: 'onlevel',
+      component: () => import('@/views/OnLevel.vue')
+    },
+    {
+      path: '/updateface',
+      name: 'update-face',
+      component: () => import('@/views/UpdateFace.vue')
+    },
+    {
+      path: '/attendance',
+      name: 'attendance',
+      component: () => import('@/views/Attendance.vue')
+    },
+    {
+      path: '/tasks',
+      name: 'tasks',
+      component: () => import('@/views/Task.vue')
     }
   ]
 })

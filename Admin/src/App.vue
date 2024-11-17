@@ -1,12 +1,10 @@
 <script setup>
 import defaultLayout from '@/views/layouts/DefaultLayout.vue'
 import { ModalsContainer } from 'vue-final-modal'
-import BaseDarkButton from '@/components/common/BaseDarkButton.vue'
-import BaseLightButton from '@/components/common/BaseLightButton.vue'
 </script>
 
 <template>
-  <div class="w-full text-stone-500 bg-teal-50">
+  <div class="w-full min-h-dvh text-stone-500 bg-teal-50 pb-96">
     <defaultLayout>
       <ModalsContainer />
       <router-view class="container mx-auto" />

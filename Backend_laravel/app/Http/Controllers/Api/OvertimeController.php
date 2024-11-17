@@ -85,4 +85,13 @@ class OvertimeController extends Controller
             ->get();
         return response()->json($requests);
     }
+
+    // tổng số giờ OT của tất cả nhân viên trong tháng hiện tại
+    public function totalOvertimeHoursInMonthForAllUsers()
+    {
+        $totalOvertimeHours = Overtime::whereMonth('request_date', now()->month)
+            ->whereYear('request_date', now()->year)
+            ->sum('request_hour');
+        return response()->json($totalOvertimeHours);
+    }
 }

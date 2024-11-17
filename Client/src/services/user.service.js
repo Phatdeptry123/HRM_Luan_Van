@@ -12,7 +12,9 @@ class UserService {
 
   async updateUser(id, data) {
     try {
-      const response = await api.put(`/users/update/${id}`, data)
+      const response = await api.post(`/users/update/${id}`, data, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      })
       return response.data
     } catch (error) {
       return Promise.reject(error)

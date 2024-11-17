@@ -99,7 +99,7 @@ class RequestController extends Controller
      */
     public function getRequestsForUser($id)
     {
-        $requests = Request::where('user_id', $id)->get();
+        $requests = Request::where('user_id', $id)->with('user:id,name')->get();
         return response()->json($requests);
     }
 

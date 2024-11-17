@@ -3,6 +3,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller as Controller;
 use App\Models\Attendance;
+use App\Models\Request as ModelsRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
 // Import model User để tìm kiếm theo username
@@ -119,4 +120,115 @@ class AttendanceController extends Controller
         }
     }
 
+    public function countDaysCheckinInMonthForAllUsers()
+    {
+        $approvedRequests = ModelsRequest::select('user_id')
+            ->whereMonth('request_date', now()->month)
+            ->whereYear('request_date', now()->year)
+            ->where(function($query) {
+                $query->where('type', 'leave')
+                      ->orWhere('type', 'remote');
+            })
+            ->where('status', 'approved')
+            ->get()
+            ->groupBy('user_id');
+
+        $attendances = Attendance::selectRaw('user_id, count(*) as total')
+            ->whereMonth('date', now()->month)
+            ->whereYear('date', now()->year)
+            ->whereTime('check_in', '<=', '09:00:00')
+            ->whereTime('check_out', '>=', '16:00:00')
+            ->groupBy('user_id')
+            ->get()
+            ->keyBy('user_id');
+
+        foreach ($approvedRequests as $userId => $requests) {
+            if (isset($attendances[$userId])) {
+                $attendances[$userId]->total += $requests->count();
+            } else {
+                $attendances[$userId] = (object) [
+                    'user_id' => $userId,
+                    'total' => $requests->count()
+                ];
+            }
+        }
+
+        $userIds = $attendances->pluck('user_id')->toArray();
+        $users = User::whereIn('id', $userIds)->get()->keyBy('id');
+
+        $result = $attendances->map(function ($attendance) use ($users) {
+            $attendance->user = $users[$attendance->user_id];
+            return $attendance;
+        });
+
+        return response()->json($result->values());
+    }
+
+    public function countDaysCheckinLateOrCheckoutEarlyInMonthForAllUsers()
+    {
+        $attendances = Attendance::selectRaw('user_id, count(*) as total')
+            ->whereMonth('date', now()->month)
+            ->whereYear('date', now()->year)
+            ->where(function ($query) {
+                // Điều kiện đi trễ
+                $query->whereTime('check_in', '>', '08:00:00')
+                      ->whereTime('check_in', '<', '08:59:59');
+            })
+            ->orWhere(function ($query) {
+                // Điều kiện về sớm
+                $query->whereTime('check_out', '<', '17:00:00')
+                      ->whereTime('check_out', '>', '16:00:00');
+            })
+            ->groupBy('user_id')
+            ->get()
+            ->keyBy('user_id');
+    
+        return response()->json($attendances->values());
+    }
+
+    public function averageTimeoffInMonthForAllUsers()
+    {
+        $attendances = Attendance::selectRaw('user_id, count(*) as total')
+            ->whereMonth('date', now()->month)
+            ->whereYear('date', now()->year)
+            ->where(function ($query) {
+                // Điều kiện đi trễ
+                $query->whereTime('check_in', '>', '08:00:00')
+                      ->whereTime('check_in', '<', '08:59:59');
+            })
+            ->orWhere(function ($query) {
+                // Điều kiện về sớm
+                $query->whereTime('check_out', '<', '17:00:00')
+                      ->whereTime('check_out', '>', '16:00:00');
+            })
+            ->groupBy('user_id')
+            ->get()
+            ->keyBy('user_id');
+    
+        // Lấy danh sách các ngày trong tháng ngoại trừ thứ 7 và chủ nhật
+        $daysInMonth = collect(range(1, now()->daysInMonth))->filter(function ($day) {
+            $date = now()->setDay($day);
+            return !$date->isWeekend(); // Bỏ qua thứ 7, chủ nhật
+        });
+    
+        // Duyệt qua mỗi user để kiểm tra các ngày không có check-in
+        foreach ($daysInMonth as $day) {
+            $currentDate = now()->setDay($day)->toDateString();
+    
+            $usersWithoutAttendance = User::whereDoesntHave('attendances', function ($query) use ($currentDate) {
+                $query->whereDate('date', $currentDate);
+            })->pluck('id');
+    
+            foreach ($usersWithoutAttendance as $userId) {
+                if (isset($attendances[$userId])) {
+                    $attendances[$userId]->total += 1;
+                } else {
+                    $attendances[$userId] = (object) ['user_id' => $userId, 'total' => 1];
+                }
+            }
+        }
+    
+        return response()->json($attendances->values());
+    }
+    
 }

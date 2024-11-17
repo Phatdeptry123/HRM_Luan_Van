@@ -25,11 +25,18 @@ class MonthlySalary extends Model
         'working_days',
         'overtime_hours',
         'overtime_salary',
+        'days_checkin_late_or_checkout_early',
+        'deduction_checkin_late_or_checkout_early',
     ];
 
     // Quan hệ với bảng users
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public static function whereYear($year)
+    {
+        return MonthlySalary::where('month', 'like', $year . '-%');
     }
 }

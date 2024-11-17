@@ -1,8 +1,8 @@
 <template>
   <div class="p-4">
-    <div class="flex justify-between items-center mb-4">
+    <div class="mb-4">
       <!-- Date Navigation -->
-      <div class="flex items-center space-x-4">
+      <div class="flex justify-between">
         <button @click="goToPreviousMonth" class="px-2 py-1 bg-gray-200 hover:bg-gray-300 rounded">
           Tháng trước
         </button>
@@ -32,7 +32,21 @@
         </thead>
         <tbody>
           <tr v-for="week in weeksInMonth" :key="week">
-            <td v-for="day in week" :key="day.date" class="border p-2">
+            <td
+              v-for="day in week"
+              :key="day.date"
+              class="border p-2"
+              :class="{
+                'bg-yellow-200': checkYellow(
+                  day.data,
+                  new Date(currentYear, currentMonth - 1, day.date).getDay()
+                ),
+                'bg-red-400': checkRed(
+                  day.data,
+                  new Date(currentYear, currentMonth - 1, day.date).getDay()
+                )
+              }"
+            >
               <div>{{ day.date || '' }}</div>
               <div v-if="day.data">Vào: {{ day.data.check_in }}</div>
               <div v-if="day.data">Ra: {{ day.data.check_out }}</div>
@@ -50,6 +64,7 @@
     </div>
   </div>
 </template>
+
 <script setup>
 import { ref, onMounted } from 'vue'
 import userService from '@/services/user.service'
@@ -62,22 +77,19 @@ const props = defineProps({
 })
 
 const currentYear = ref(new Date().getFullYear())
-const currentMonth = ref(new Date().getMonth() + 1) // Tháng hiện tại
+const currentMonth = ref(new Date().getMonth() + 1)
 const startDate = ref('')
 const endDate = ref('')
 
-// State
 const attendances = ref([])
 const userName = ref('')
 const weeksInMonth = ref([])
 
-// Hàm cập nhật ngày đầu tiên và ngày cuối cùng của tháng
 const updateDateRange = () => {
   startDate.value = `01/${currentMonth.value}/${currentYear.value}`
   endDate.value = `${new Date(currentYear.value, currentMonth.value, 0).getDate()}/${currentMonth.value}/${currentYear.value}`
 }
 
-// Hàm lấy số ngày trong tháng hiện tại
 const getDaysInMonth = (year, month) => {
   const days = []
   const lastDayOfMonth = new Date(Date.UTC(year, month, 0)).getUTCDate()
@@ -89,13 +101,10 @@ const getDaysInMonth = (year, month) => {
   return days
 }
 
-// Hàm xử lý hiển thị dữ liệu vào bảng
 const createWeeksInMonth = (attendances) => {
   const daysInMonth = getDaysInMonth(currentYear.value, currentMonth.value)
-
   const weeks = []
   let week = []
-
   const firstDayOfWeek = daysInMonth[0].getDay()
   const emptyDays = firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 1
 
@@ -128,7 +137,6 @@ const createWeeksInMonth = (attendances) => {
   weeksInMonth.value = weeks
 }
 
-// Gọi API khi component mounted
 const fetchAttendanceData = async () => {
   try {
     const response = await userService.getCheckinHistory(props.userId)
@@ -140,7 +148,6 @@ const fetchAttendanceData = async () => {
   }
 }
 
-// Điều hướng sang tháng trước
 const goToPreviousMonth = () => {
   if (currentMonth.value === 1) {
     currentMonth.value = 12
@@ -152,7 +159,6 @@ const goToPreviousMonth = () => {
   fetchAttendanceData()
 }
 
-// Điều hướng sang tháng sau
 const goToNextMonth = () => {
   if (currentMonth.value === 12) {
     currentMonth.value = 1
@@ -164,7 +170,30 @@ const goToNextMonth = () => {
   fetchAttendanceData()
 }
 
-// Khởi tạo khi component mount
+// Các hàm kiểm tra điều kiện
+const checkYellow = (data, dayOfWeek) => {
+  // Không tô màu cho thứ 7 (dayOfWeek === 6) và chủ nhật (dayOfWeek === 0)
+  if (dayOfWeek === 6 || dayOfWeek === 0 || !data) return false
+
+  const checkIn = data.check_in && data.check_in >= '08:00:01' && data.check_in <= '08:59:59'
+  const checkOut = data.check_out && data.check_out >= '16:00:01' && data.check_out <= '16:59:59'
+  return checkIn || checkOut
+}
+
+const checkRed = (data, dayOfWeek) => {
+  console.log('data', data)
+
+  // Không tô màu cho thứ 7 (dayOfWeek === 6) và chủ nhật (dayOfWeek === 0)
+  if (dayOfWeek === 6 || dayOfWeek === 0) return false
+  // Kiểm tra nếu không có dữ liệu hoặc ngày không thuộc tháng hiện tại
+  if (!data || data.date.split('-')[1] !== String(currentMonth.value).padStart(2, '0')) return true
+  // Kiểm tra giờ check_in và check_out
+  if (data.check_in > '09:00:00') return true
+  if (data.check_out < '17:00:00') return true
+
+  return false
+}
+
 onMounted(() => {
   updateDateRange()
   fetchAttendanceData()

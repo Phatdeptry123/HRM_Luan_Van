@@ -30,9 +30,9 @@ class SalaryService {
     }
   }
 
-  async createMonthlySalary(data) {
+  async createMonthlySalary(salaries) {
     try {
-      const response = await api.post('/monthly-salary', data)
+      const response = await api.post('/monthly-salary', salaries)
       return response.data
     } catch (error) {
       return Promise.reject(error)
@@ -45,6 +45,17 @@ class SalaryService {
         params: { month } // Gửi tham số month qua query string
       })
       return response.data
+    } catch (error) {
+      return Promise.reject(error)
+    }
+  }
+
+  async getAverageSalaryByMonthAndYear(month) {
+    try {
+      const response = await api.get('/monthly-salary/get-average-salary-by-month-and-year', {
+        params: { month }
+      })
+      return response.data.average_salary
     } catch (error) {
       return Promise.reject(error)
     }

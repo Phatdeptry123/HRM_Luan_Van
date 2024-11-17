@@ -7,6 +7,7 @@ use App\Models\Salary;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 
 class UserController extends Controller
@@ -176,7 +177,12 @@ class UserController extends Controller
         // Explicitly fetch the user by ID
         $user = User::findOrFail($id);
         $salary = Salary::where('user_id', $user->id)->first();
-    
+        if ($request->hasFile('avatar')) {
+            $folder = '/image';
+            $filename = Storage::disk('supabase')->put($folder, $request->file('avatar'));
+            $publicUrl = Storage::disk('supabase')->getAdapter()->getPublicUrl($filename);
+            $user->avatar_img_url = $publicUrl ?? '';
+        }
         // Validate incoming data, only requiring fields that are present in the request
         $validatedData = $request->validate([
             'name' => 'sometimes|required|string|max:255',
@@ -211,77 +217,77 @@ class UserController extends Controller
             'salaries.deductions' => 'sometimes|nullable|numeric',
             'salaries.deduction_description' => 'sometimes|nullable|string',
         ]);
-    
+
         // Update user information if the corresponding field is present in the request
         if ($request->filled('name')) {
             $user->name = $validatedData['name'];
         }
-    
+
         if ($request->filled('username')) {
             $user->username = $validatedData['username'];
         }
-    
+
         if ($request->filled('email')) {
             $user->email = $validatedData['email'];
         }
-    
+
         if ($request->filled('password')) {
             $user->password = Hash::make($validatedData['password']);
         }
-    
+
         if ($request->filled('duty')) {
             $user->duty = $validatedData['duty'];
         }
-    
+
         if ($request->filled('phone')) {
             $user->phone = $validatedData['phone'];
         }
-    
+
         if ($request->filled('address')) {
             $user->address = $validatedData['address'];
         }
-    
+
         if ($request->filled('birthday')) {
             $user->birthday = $validatedData['birthday'];
         }
-    
+
         if ($request->filled('role')) {
             $user->role = $validatedData['role'];
         }
-    
+
         if ($request->filled('salaries')) {
             $salaryData = $validatedData['salaries'];
-    
+
             // Check if salary exists, if not, create a new Salary instance
             if (!$salary) {
                 $salary = new Salary();
                 $salary->user_id = $user->id;
             }
-    
+
             if ($request->filled('salaries.basic_salary')) {
                 $salary->basic_salary = $salaryData['basic_salary'];
             }
-    
+
             if ($request->filled('salaries.bonus')) {
                 $salary->bonus = $salaryData['bonus'];
             }
-    
+
             if ($request->filled('salaries.tax')) {
                 $salary->tax = $salaryData['tax'];
             }
-    
+
             if ($request->filled('salaries.social_insurance')) {
                 $salary->social_insurance = $salaryData['social_insurance'];
             }
-    
+
             if ($request->filled('salaries.deductions')) {
                 $salary->deductions = $salaryData['deductions'];
             }
-    
+
             if ($request->filled('salaries.deduction_description')) {
                 $salary->deduction_description = $salaryData['deduction_description'];
             }
-    
+
             // Recalculate the total salary
             $totalSalary = $salaryData['basic_salary'] + ($salaryData['bonus'] ?? 0) -
                 ($salaryData['tax'] ?? 0) -
@@ -289,14 +295,14 @@ class UserController extends Controller
                 ($salaryData['deductions'] ?? 0);
             $salary->total_salary = $totalSalary;
             $salary->salary_date = $salaryData['salary_date'] ?? now();
-    
+
             // Save the updated salary information to the database
             $salary->save();
         }
-    
+
         // Save the updated user information to the database
         $user->save();
-    
+
         // Return a JSON response with the updated user information
         return response()->json([
             'success' => true,
@@ -304,7 +310,6 @@ class UserController extends Controller
             'message' => 'User updated successfully.',
         ]);
     }
-    
 
     /**
      * Remove the specified user from storage.
@@ -333,7 +338,7 @@ class UserController extends Controller
         }
     }
 
-        /**
+    /**
      * Cập nhật người quản lý cho một user.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -344,7 +349,7 @@ class UserController extends Controller
     {
         // Xác thực đầu vào (manager_id phải tồn tại và là số)
         $request->validate([
-            'manager_id' => 'nullable|exists:users,id'
+            'manager_id' => 'nullable|exists:users,id',
         ]);
 
         // Tìm user theo id
@@ -353,7 +358,7 @@ class UserController extends Controller
         // Nếu không tìm thấy user thì trả về lỗi 404
         if (!$user) {
             return response()->json([
-                'message' => 'Không tìm thấy user.'
+                'message' => 'Không tìm thấy user.',
             ], 404);
         }
 
@@ -363,7 +368,7 @@ class UserController extends Controller
 
         return response()->json([
             'message' => 'Cập nhật người quản lý thành công.',
-            'user' => $user
+            'user' => $user,
         ]);
     }
 
@@ -375,7 +380,7 @@ class UserController extends Controller
         // Nếu không tìm thấy user thì trả về lỗi 404
         if (!$user) {
             return response()->json([
-                'message' => 'Không tìm thấy user.'
+                'message' => 'Không tìm thấy user.',
             ], 404);
         }
 
@@ -385,12 +390,59 @@ class UserController extends Controller
         // Nếu không tìm thấy người quản lý thì trả về lỗi 404
         if (!$manager) {
             return response()->json([
-                'message' => 'Không tìm thấy người quản lý.'
+                'message' => 'Không tìm thấy người quản lý.',
             ], 404);
         }
 
         return response()->json([
-            'manager_name' => $manager->name
+            'manager_name' => $manager->name,
+        ]);
+    }
+
+    public function search(Request $request)
+    {
+        try {
+            // Lấy từ khóa tìm kiếm từ query string
+            $keyword = $request->query('keyword');
+
+            // Tìm kiếm user theo tên hoặc email
+            $users = User::where('name', 'like', "%$keyword%")
+                ->orWhere('email', 'like', "%$keyword%")
+                ->get();
+
+            return response()->json([
+                'data' => $users,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to search users.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function updateFaceId(Request $request, $id)
+    {
+        // Explicitly fetch the user by ID
+        $user = User::findOrFail($id);
+        if ($request->hasFile('face_image')) {
+            $folder = '/image';
+            $filename = Storage::disk('supabase')->put($folder, $request->file('face_image'));
+            $publicUrl = Storage::disk('supabase')->getAdapter()->getPublicUrl($filename);
+            $user->face_img_url = $publicUrl ?? '';
+        }
+        // Save the updated user information to the database
+        $user->save();
+    }
+
+    public function countUsers()
+    {
+        $users = User::all();
+        $count = $users->count();
+
+        return response()->json([
+            'count' => $count,
         ]);
     }
 }

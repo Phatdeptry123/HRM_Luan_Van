@@ -12,11 +12,14 @@
         <!-- Table Header -->
         <thead class="bg-gray-200 text-gray-700">
           <tr>
+            <th class="p-3 text-left min-w-[200px]">Quản lý lương</th>
             <th class="p-3 text-left min-w-[200px]">Tên nhân viên</th>
             <th class="p-3 text-center min-w-[200px]">Lương cơ bản</th>
             <th class="p-3 text-center min-w-[200px]">Số công</th>
             <th class="p-3 text-center min-w-[200px]">Giờ tăng ca</th>
             <th class="p-3 text-center min-w-[200px]">Lương tăng ca</th>
+            <th class="p-3 text-center min-w-[200px]">Đi trễ/về sớm</th>
+            <th class="p-3 text-center min-w-[200px]">Trừ đi trễ/về sớm</th>
             <th class="p-3 text-center min-w-[200px]">Lương BHXH</th>
             <th class="p-3 text-center min-w-[200px]">Thuế TNCN</th>
             <th class="p-3 text-center min-w-[200px]">Khấu trừ</th>
@@ -30,6 +33,11 @@
         <!-- Table Body -->
         <tbody>
           <tr v-for="(salary, index) in salaries" :key="index" class="bg-gray-50 text-center">
+            <td class="p-3 text-left font-medium text-gray-800 min-w-[200px]">
+              <BaseLightButton>
+                <router-link :to="`/salary/${salary.user.id}`">Quản lý lương</router-link>
+              </BaseLightButton>
+            </td>
             <td class="p-3 text-left font-medium text-gray-800 min-w-[200px]">
               {{ salary.user.name }}<br />
               <small class="text-gray-500"
@@ -71,6 +79,22 @@
             </td>
             <td class="p-3">
               <input
+                v-model="salary.daysCheckinLateOrCheckoutEarly"
+                type="number"
+                disabled
+                class="input input-bordered w-full"
+              />
+            </td>
+            <td class="p-3">
+              <input
+                v-model="salary.reductionCheckinLateOrCheckoutEarly"
+                type="number"
+                disabled
+                class="input input-bordered w-full"
+              />
+            </td>
+            <td class="p-3">
+              <input
                 v-model="salary.social_insurance"
                 type="number"
                 disabled
@@ -86,11 +110,11 @@
               />
             </td>
             <td class="p-3">
-              <input v-model="salary.deduction" type="number" class="input input-bordered w-full" />
+              <input v-model="salary.reduction" type="number" class="input input-bordered w-full" />
             </td>
             <td class="p-3">
               <textarea
-                v-model="salary.deduction_description"
+                v-model="salary.reduction_description"
                 class="textarea textarea-bordered w-full"
               ></textarea>
             </td>
@@ -129,6 +153,7 @@
 import { onMounted, ref, watch } from 'vue'
 import Swal from 'sweetalert2'
 import salaryService from '@/services/salary.service'
+import attendanceService from '@/services/attendance.service'
 import router from '@/router'
 
 const salaries = ref([
@@ -140,8 +165,8 @@ const salaries = ref([
     bonus_description: null,
     tax: 0,
     social_insurance: 0,
-    deduction: 0,
-    deduction_description: null,
+    reduction: 0,
+    reduction_description: null,
     total_salary: 0,
     salary_date: null,
     created_at: null,
@@ -149,6 +174,8 @@ const salaries = ref([
     workingDays: 0,
     overtimeHours: 0,
     overtimeSalary: 0,
+    daysCheckinLateOrCheckoutEarly: 0,
+    reductionCheckinLateOrCheckoutEarly: 0,
     totalSalary: 0,
     user: {
       id: 0,
@@ -222,10 +249,44 @@ const salaries = ref([
 
 const currentMonth = new Date().getMonth() + 1
 
-const workingDaysCalculation = (salary) => {
-  salary.workingDays = salary.user.attendances.filter(
-    (attendance) => attendance.created_at.split('-')[1] === currentMonth.toString()
-  ).length
+const workingDaysCalculation = async () => {
+  try {
+    const response = await attendanceService.countDaysCheckinInMonthForAllUsers()
+    salaries.value.forEach((salary) => {
+      const userAttendance = response.find((data) => data.user_id === salary.user.id)
+      salary.workingDays = userAttendance ? userAttendance.total : 0
+    })
+  } catch (error) {
+    console.error('Lỗi khi tính số ngày làm việc:', error)
+  }
+}
+
+const daysCheckinLateOrCheckoutEarlyCalculation = async () => {
+  try {
+    const response = await attendanceService.countDaysCheckinLateOrCheckoutEarlyForAllUsers()
+    console.log('response', response)
+
+    salaries.value.forEach((salary) => {
+      const userAttendance = response.find((data) => data.user_id === salary.user.id)
+      console.log('userAttendance', userAttendance)
+
+      const totalDaysCheckinLateOrCheckoutEarly = userAttendance ? userAttendance.total : 0
+      salary.daysCheckinLateOrCheckoutEarly = totalDaysCheckinLateOrCheckoutEarly
+
+      // Kiểm tra để tránh chia cho 0 hoặc undefined
+      if (totalDaysCheckinLateOrCheckoutEarly > 0) {
+        salary.reductionCheckinLateOrCheckoutEarly = Math.round(
+          (salary.basic_salary / countWorkingDays(new Date().getFullYear(), currentMonth)) *
+            totalDaysCheckinLateOrCheckoutEarly *
+            0.15
+        )
+      } else {
+        salary.reductionCheckinLateOrCheckoutEarly = 0
+      }
+    })
+  } catch (error) {
+    console.error('Lỗi khi tính số ngày đi muộn về sớm:', error)
+  }
 }
 
 const overtimeHoursCalculation = (salary) => {
@@ -315,35 +376,40 @@ const taxCalculation = (salary) => {
 
 const totalSalaryCalculation = (salary) => {
   salary.totalSalary =
-    (Number(salary.basic_salary) || 0) +
+    (Number(salary.basic_salary) / countWorkingDays(new Date().getFullYear(), currentMonth)) *
+      salary.workingDays +
     (Number(salary.overtimeSalary) || 0) -
     (Number(salary.social_insurance) || 0) -
     (Number(salary.tax) || 0) +
     (Number(salary.bonus) || 0) -
-    (Number(salary.deduction) || 0)
+    (Number(salary.reduction) || 0) -
+    (Number(salary.reductionCheckinLateOrCheckoutEarly) || 0)
 }
 
 const handleSave = async () => {
   try {
-    await Promise.all(
-      salaries.value.map((salary) =>
-        salaryService.createMonthlySalary({
-          user_id: salary.user.id,
-          basic_salary: salary.basic_salary,
-          bonus: salary.bonus,
-          bonus_description: salary.bonus_description,
-          tax: salary.tax,
-          social_insurance: salary.social_insurance,
-          deduction: salary.deduction,
-          deduction_description: salary.deduction_description,
-          total_salary: salary.totalSalary,
-          month: `${new Date().getFullYear()}-${String(currentMonth).padStart(2, '0')}`,
-          working_days: salary.workingDays,
-          overtime_hours: salary.overtimeHours,
-          overtime_salary: salary.overtimeSalary
-        })
-      )
-    )
+    // Chuẩn bị dữ liệu cho toàn bộ lương
+    const salaryData = salaries.value.map((salary) => ({
+      user_id: salary.user.id,
+      basic_salary: salary.basic_salary,
+      bonus: salary.bonus,
+      bonus_description: salary.bonus_description,
+      tax: salary.tax,
+      social_insurance: salary.social_insurance,
+      reduction: salary.reduction,
+      reduction_description: salary.reduction_description,
+      total_salary: salary.totalSalary,
+      month: `${new Date().getFullYear()}-${String(currentMonth).padStart(2, '0')}`,
+      working_days: salary.workingDays,
+      overtime_hours: salary.overtimeHours,
+      overtime_salary: salary.overtimeSalary,
+      days_checkin_late_or_checkout_early: salary.daysCheckinLateOrCheckoutEarly,
+      reduction_checkin_late_or_checkout_early: salary.reductionCheckinLateOrCheckoutEarly
+    }))
+
+    // Gọi API một lần duy nhất
+    await salaryService.createMonthlySalary(salaryData)
+
     Swal.fire('Thành công', 'Cập nhật phiếu lương thành công', 'success')
     router.push('/history-payslips')
   } catch (error) {
@@ -364,7 +430,7 @@ watch(
   { deep: true }
 )
 
-onMounted(async () => {
+const fetchSalary = async () => {
   try {
     // Gọi API để lấy danh sách nhân viên
     const response = await salaryService.getAllSalaries()
@@ -374,7 +440,7 @@ onMounted(async () => {
       ...salary,
       basic_salary: salary.basic_salary ?? 0,
       bonus: salary.bonus ?? 0,
-      deduction: salary.deduction ?? 0,
+      reduction: salary.reduction ?? 0,
       overtimeSalary: salary.overtimeSalary ?? 0,
       social_insurance: salary.social_insurance ?? 0,
       tax: salary.tax ?? 0,
@@ -400,6 +466,10 @@ onMounted(async () => {
   } catch (error) {
     console.error('Lỗi khi lấy danh sách nhân viên:', error)
   }
+}
+onMounted(async () => {
+  await fetchSalary()
+  await daysCheckinLateOrCheckoutEarlyCalculation()
 })
 </script>
 
@@ -413,13 +483,13 @@ onMounted(async () => {
 .col-overtime-salary,
 .col-insurance-salary,
 .col-income-tax,
-.col-deductions,
+.col-reductions,
 .col-bonus,
 .col-basic-salary,
 .col-total-salary {
   width: 120px;
 }
-.col-deductions-description,
+.col-reductions-description,
 .col-bonus-description {
   width: 200px;
 }

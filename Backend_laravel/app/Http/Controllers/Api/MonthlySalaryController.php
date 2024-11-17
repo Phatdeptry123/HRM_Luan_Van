@@ -36,43 +36,49 @@ class MonthlySalaryController extends Controller
     public function store(Request $request)
     {
         try {
-            // Validate các trường cơ bản trước
-            $validatedData = $request->validate([
-                'user_id' => 'required|exists:users,id',
-                'basic_salary' => 'required|numeric',
-                'bonus' => 'nullable|numeric',
-                'bonus_description' => 'nullable|string',
-                'reduction' => 'nullable|numeric',
-                'reduction_description' => 'nullable|string',
-                'tax' => 'nullable|numeric',
-                'social_insurance' => 'nullable|numeric',
-                'total_salary' => 'required|numeric',
-                'month' => 'required|date_format:Y-m',
-                'working_days' => 'nullable|integer',
-                'overtime_hours' => 'nullable|integer',
-                'overtime_salary' => 'nullable|numeric',
+            $salaries = $request->validate([
+                '*.user_id' => 'required|exists:users,id',
+                '*.basic_salary' => 'required|numeric',
+                '*.bonus' => 'nullable|numeric',
+                '*.bonus_description' => 'nullable|string',
+                '*.reduction' => 'nullable|numeric',
+                '*.reduction_description' => 'nullable|string',
+                '*.tax' => 'nullable|numeric',
+                '*.social_insurance' => 'nullable|numeric',
+                '*.total_salary' => 'required|numeric',
+                '*.month' => 'required|date_format:Y-m',
+                '*.working_days' => 'nullable|integer',
+                '*.overtime_hours' => 'nullable|integer',
+                '*.overtime_salary' => 'nullable|numeric',
+                '*.days_checkin_late_or_checkout_early' => 'nullable|integer',
+                '*.deduction_checkin_late_or_checkout_early' => 'nullable|numeric',
             ]);
 
-            // Chuẩn hóa dữ liệu cho tháng và năm
-            $validatedData['month'] = Carbon::createFromFormat('Y-m', $validatedData['month'])
-                ->startOfMonth()
-                ->setTime(0, 0, 0);
+            $results = [];
+            foreach ($salaries as $validatedData) {
+                // Chuẩn hóa dữ liệu cho tháng và năm
+                $validatedData['month'] = Carbon::createFromFormat('Y-m', $validatedData['month'])
+                    ->startOfMonth()
+                    ->setTime(0, 0, 0);
 
-            // Kiểm tra xem lương tháng cho user_id và month đã tồn tại chưa
-            $existingSalary = MonthlySalary::where('user_id', $validatedData['user_id'])
-                ->whereYear('month', $validatedData['month']->year)
-                ->whereMonth('month', $validatedData['month']->month)
-                ->first();
+                // Kiểm tra xem lương tháng cho user_id và month đã tồn tại chưa
+                $existingSalary = MonthlySalary::where('user_id', $validatedData['user_id'])
+                    ->whereYear('month', $validatedData['month']->year)
+                    ->whereMonth('month', $validatedData['month']->month)
+                    ->first();
 
-            // Nếu đã tồn tại, cập nhật bản ghi
-            if ($existingSalary) {
-                $existingSalary->update($validatedData);
-                return response()->json($existingSalary, 200);
+                // Nếu đã tồn tại, cập nhật bản ghi
+                if ($existingSalary) {
+                    $existingSalary->update($validatedData);
+                    $results[] = $existingSalary;
+                } else {
+                    // Nếu không tồn tại, tạo mới
+                    $salary = MonthlySalary::create($validatedData);
+                    $results[] = $salary;
+                }
             }
 
-            // Nếu không tồn tại, tạo mới
-            $salary = MonthlySalary::create($validatedData);
-            return response()->json($salary, 201);
+            return response()->json($results, 200);
 
         } catch (Exception $e) {
             return response()->json(['error' => $e->getMessage()], 400);
@@ -98,6 +104,8 @@ class MonthlySalaryController extends Controller
                 'working_days' => 'nullable|integer',
                 'overtime_hours' => 'nullable|integer',
                 'overtime_salary' => 'nullable|numeric',
+                'days_checkin_late_or_checkout_early' => 'nullable|integer',
+                'deduction_checkin_late_or_checkout_early' => 'nullable|numeric',
             ]);
 
             // Chuẩn hóa dữ liệu cho tháng và năm
@@ -155,6 +163,8 @@ class MonthlySalaryController extends Controller
                 'working_days' => 'nullable|integer',
                 'overtime_hours' => 'nullable|integer',
                 'overtime_salary' => 'nullable|numeric',
+                'days_checkin_late_or_checkout_early' => 'nullable|integer',
+                'deduction_checkin_late_or_checkout_early' => 'nullable|numeric',
             ]);
 
             // Chuẩn hóa dữ liệu cho tháng và năm
@@ -189,6 +199,8 @@ class MonthlySalaryController extends Controller
                     'working_days' => $validatedData['working_days'],
                     'overtime_hours' => $validatedData['overtime_hours'],
                     'overtime_salary' => $validatedData['overtime_salary'],
+                    'days_checkin_late_or_checkout_early' => $validatedData['days_checkin_late_or_checkout_early'],
+                    'deduction_checkin_late_or_checkout_early' => $validatedData['deduction_checkin_late_or_checkout_early'],
                 ]);
             }
         } catch (Exception $e) {
@@ -218,6 +230,26 @@ class MonthlySalaryController extends Controller
             return response()->json(['month' => $month, 'error' => $e->getMessage(),
 
             ], 400);
+        }
+    }
+
+    public function getAverageSalaryByMonthAndYear(Request $request)
+    {
+        try {
+            $validatedData = $request->validate([
+                'month' => 'required|date_format:Y-m',
+            ]);
+
+            $month = Carbon::createFromFormat('Y-m', $validatedData['month'])
+                ->startOfMonth()
+                ->setTime(0, 0, 0);
+
+            $averageSalary = MonthlySalary::where('month', 'like', $month->format('Y-m') . '%')
+                ->avg('total_salary');
+            
+            return response()->json(['average_salary' => $averageSalary]);
+        } catch (Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 400);
         }
     }
 }

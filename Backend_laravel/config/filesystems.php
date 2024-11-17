@@ -11,10 +11,11 @@ return [
     | by the framework. The "local" disk, as well as a variety of cloud
     | based disks are available to your application for file storage.
     |
-    */
+     */
 
     'default' => env('FILESYSTEM_DISK', 'local'),
 
+   
     /*
     |--------------------------------------------------------------------------
     | Filesystem Disks
@@ -26,10 +27,24 @@ return [
     |
     | Supported drivers: "local", "ftp", "sftp", "s3"
     |
-    */
+     */
 
     'disks' => [
-
+        'supabase' => [
+            'driver' => 'supabase',
+            'key' => env('SUPABASE_ANON_KEY'), // Use a privileged key; read-only does not work
+            'bucket' => 'uploads',
+            'endpoint' => env('SUPABASE_PROJECT_URL'),
+            'url' => null, // <- Automatically generated; change here if you are using a proxy
+            'public' => true, // Default to true
+            'defaultUrlGeneration' => null, // 'signed' | 'public' <- default depends on public
+            'defaultUrlGenerationOptions' => [
+                'download' => true,
+                'transform' => [],
+            ],
+            'signedUrlExpires' => 60 * 60 * 24, // 1 day <- default to 1 hour (3600)
+        ],
+    
         'local' => [
             'driver' => 'local',
             'root' => storage_path('app'),
@@ -39,7 +54,7 @@ return [
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),
-            'url' => env('APP_URL').'/storage',
+            'url' => env('APP_URL') . '/storage',
             'visibility' => 'public',
             'throw' => false,
         ],
@@ -67,7 +82,7 @@ return [
     | `storage:link` Artisan command is executed. The array keys should be
     | the locations of the links and the values should be their targets.
     |
-    */
+     */
 
     'links' => [
         public_path('storage') => storage_path('app/public'),
