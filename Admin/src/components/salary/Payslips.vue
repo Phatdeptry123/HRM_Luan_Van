@@ -7,7 +7,7 @@
       >
     </div>
     <!-- Table -->
-    <div class="overflow-x-auto">
+    <div class="overflow-x-auto Overflow-y-scroll" style="max-height: 70vh;">
       <table class="w-full border-collapse">
         <!-- Table Header -->
         <thead class="bg-gray-200 text-gray-700">
@@ -500,5 +500,47 @@ textarea[disabled] {
   color: #000000 !important;
   background-color: #ffffff; /* Giữ màu nền nếu cần */
   cursor: not-allowed; /* Giữ trạng thái con trỏ */
+}
+
+thead th {
+  position: sticky;
+  top: 0;
+  z-index: 10; /* Đảm bảo header nằm trên các hàng dữ liệu */
+  background-color: #f3f4f6; /* Màu nền cho header */
+}
+
+/* Sticky First Two Columns */
+tbody td:first-child,
+thead th:first-child {
+  position: sticky;
+  left: 0;
+  z-index: 5; /* Ưu tiên thấp hơn header */
+}
+
+tbody td:nth-child(2),
+thead th:nth-child(2) {
+  position: sticky;
+  left: 200px; /* Đặt giá trị tương ứng với độ rộng của cột đầu tiên */
+  z-index: 5;
+}
+thead th:first-child,
+thead th:nth-child(2) {
+  position: sticky;
+  z-index: 11;
+}
+
+tbody td:first-child,
+tbody td:nth-child(2) {
+  background-color: #ffffff;
+}
+thead th:nth-child(2)::after ,
+tbody td:nth-child(2)::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 2px;
+  height: 100%;
+  background-color: #e2e8f0;
 }
 </style>

@@ -5,8 +5,10 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Models\Overtime;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class OvertimeController extends Controller
 {
@@ -72,7 +74,7 @@ class OvertimeController extends Controller
     public function overtimeList($id)
     {
         $overtimes = Overtime::where('user_id', $id)
-            ->with('user:id,name')
+            ->with('user:id,name,avatar_img_url') // Chỉ lấy 'id', 'name' và 'avatar
             ->get();
         return response()->json($overtimes);
     }
@@ -81,7 +83,7 @@ class OvertimeController extends Controller
     public function getOvertimeRequestsForManager($id)
     {
         $requests = Overtime::where('manager_id', $id)
-            ->with('user:id,name') // Chỉ lấy 'id' và 'name' từ bảng User
+            ->with('user:id,name,avatar_img_url') // Chỉ lấy 'id' và 'name' từ bảng User
             ->get();
         return response()->json($requests);
     }
@@ -93,5 +95,50 @@ class OvertimeController extends Controller
             ->whereYear('request_date', now()->year)
             ->sum('request_hour');
         return response()->json($totalOvertimeHours);
+    }
+
+    /**
+     * Get total overtime hours for the last 12 months.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getMonthlyOvertimeHours()
+    {
+        $data = Overtime::select(
+            DB::raw("DATE_FORMAT(request_date, '%Y-%m') as month"),
+            DB::raw("SUM(request_hour) as total_hours")
+        )
+            ->where('request_date', '>=', now()->subMonths(12)->startOfMonth())
+            ->groupBy('month')
+            ->orderBy('month')
+            ->get();
+
+        return response()->json($data);
+    }
+
+    public function getUserOvertimeRanking()
+    {
+        // Lấy tháng hiện tại
+        $currentMonth = Carbon::now()->month;
+        $currentYear = Carbon::now()->year;
+
+        // Lấy dữ liệu overtime của các user trong tháng hiện tại, tính tổng số giờ overtime của từng user
+        $ranking = Overtime::whereYear('request_date', $currentYear)
+            ->whereMonth('request_date', $currentMonth)
+            ->selectRaw('user_id, sum(request_hour) as total_hours')
+            ->groupBy('user_id')
+            ->orderByDesc('total_hours')
+            ->get();
+
+        // Lấy thông tin đầy đủ của từng user trong bảng xếp hạng
+        $usersWithOvertime = $ranking->map(function ($overtime) {
+            $user = User::find($overtime->user_id);
+            return [
+                'user' => $user,
+                'total_hours' => $overtime->total_hours,
+            ];
+        });
+
+        return response()->json($usersWithOvertime);
     }
 }

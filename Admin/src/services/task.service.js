@@ -91,6 +91,15 @@ class TaskService {
       return Promise.reject(error)
     }
   }
+
+  async getTasksCompletedInMonth() {
+    try {
+      const response = await api.get('/tasks/get-tasks-completed-in-month')
+      return response.data
+    } catch (error) {
+      return Promise.reject(error)
+    }
+  }
 }
 
 export default new TaskService()

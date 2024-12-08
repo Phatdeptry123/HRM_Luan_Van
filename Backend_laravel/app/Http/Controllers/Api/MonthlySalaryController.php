@@ -137,6 +137,7 @@ class MonthlySalaryController extends Controller
         try {
             $salary = MonthlySalary::where('user_id', $id)
                 ->with('user')
+                ->orderBy('month', 'asc')
                 ->get();
             return response()->json($salary);
         } catch (Exception $e) {
@@ -220,7 +221,7 @@ class MonthlySalaryController extends Controller
                 ->startOfMonth()
                 ->setTime(0, 0, 0);
 
-            $salaries = MonthlySalary::whereYear('month', $month->year)
+            $salaries = MonthlySalary::whereYear( $month->year)
                 ->whereMonth('month', $month->month)
                 ->with('user')
                 ->get();

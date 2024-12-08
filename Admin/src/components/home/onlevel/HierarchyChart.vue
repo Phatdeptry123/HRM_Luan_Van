@@ -1,7 +1,7 @@
 <template>
   <div>
     <h2 class="text-2xl font-bold mt-10">Sơ đồ cấp bậc</h2>
-    <div ref="network" class="w-full h-96 bg-white border rounded-lg shadow-md"></div>
+    <div ref="network" class="w-full h-200 bg-white border rounded-lg shadow-md"></div>
   </div>
 </template>
 
@@ -35,7 +35,7 @@ const drawHierarchy = () => {
       if (!existingNodeIds.has(subordinate.id)) {
         nodes.push({
           id: subordinate.id,
-          label: subordinate.name + ' - ' + manager.username,
+          label: subordinate.name,
           shape: 'box'
         })
         existingNodeIds.add(subordinate.id) // Thêm id vào tập hợp
@@ -87,5 +87,9 @@ watch(
 .network {
   width: 100%;
   height: 100%;
+}
+
+.h-200 {
+  height: 1000px;
 }
 </style>

@@ -17,7 +17,7 @@ class AttendanceSeeder extends Seeder
     public function run()
     {
         $attendances = [];
-        $month = 10;
+        $month = 12;
         $year = 2024;
 
         // Lấy tất cả user từ bảng users

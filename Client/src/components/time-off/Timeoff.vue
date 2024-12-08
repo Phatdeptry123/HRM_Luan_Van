@@ -43,7 +43,7 @@
       >
         <div class="flex items-center space-x-4">
           <img
-            :src="'/path/to/avatar/' + request.user_id + '.jpg'"
+            :src="user.avatar_img_url"
             alt="User Avatar"
             class="w-12 h-12 rounded-full"
           />
@@ -68,7 +68,7 @@
       >
         <div class="flex items-center space-x-4">
           <img
-            :src="'/path/to/avatar/' + request.user_id + '.jpg'"
+            :src="request.user.avatar_img_url"
             alt="User Avatar"
             class="w-12 h-12 rounded-full"
           />
@@ -105,7 +105,7 @@
       >
         <div class="flex items-center space-x-4">
           <img
-            :src="'/path/to/avatar/' + request.user_id + '.jpg'"
+            :src="request.user.avatar_img_url"
             alt="User Avatar"
             class="w-12 h-12 rounded-full"
           />

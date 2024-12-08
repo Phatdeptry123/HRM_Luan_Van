@@ -122,6 +122,7 @@ class AttendanceController extends Controller
 
     public function countDaysCheckinInMonthForAllUsers()
     {
+
         $approvedRequests = ModelsRequest::select('user_id')
             ->whereMonth('request_date', now()->month)
             ->whereYear('request_date', now()->year)
@@ -141,7 +142,6 @@ class AttendanceController extends Controller
             ->groupBy('user_id')
             ->get()
             ->keyBy('user_id');
-
         foreach ($approvedRequests as $userId => $requests) {
             if (isset($attendances[$userId])) {
                 $attendances[$userId]->total += $requests->count();
@@ -152,7 +152,6 @@ class AttendanceController extends Controller
                 ];
             }
         }
-
         $userIds = $attendances->pluck('user_id')->toArray();
         $users = User::whereIn('id', $userIds)->get()->keyBy('id');
 

@@ -21,7 +21,7 @@
           <i class="fas fa-briefcase"></i>
           Lương:
           <span v-if="showSalary" class="mr-1"
-            >{{ Math.floor(user.salaries[0]?.basic_salary).toLocaleString() }} vnđ</span
+            >{{ Math.floor(user.salaries[0]?.basic_salary).toLocaleString() || 0 }} vnđ</span
           >
           <span v-else class="mr-1">*************</span>
           <!-- Icon để ẩn/hiện mức lương -->

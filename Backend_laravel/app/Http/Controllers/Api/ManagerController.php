@@ -130,4 +130,35 @@ class ManagerController extends Controller
             'subordinate' => $subordinate
         ]);
     }
+
+    /**
+     * lấy người quản lý của user.
+     * 
+     * @param  int  $userId
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getManager($userId)
+    {
+        // Tìm user theo id
+        $user = User::find($userId);
+
+        // Nếu không tìm thấy user thì trả về lỗi 404
+        if (!$user) {
+            return response()->json([
+                'message' => 'Không tìm thấy user.'
+            ], 404);
+        }
+
+        // Tìm người quản lý của user
+        $manager = User::find($user->manager_id);
+
+        // Nếu không tìm thấy người quản lý thì trả về lỗi 404
+        if (!$manager) {
+            return response()->json([
+                'message' => 'Không tìm thấy người quản lý.'
+            ], 404);
+        }
+
+        return response()->json($manager);
+    }
 }

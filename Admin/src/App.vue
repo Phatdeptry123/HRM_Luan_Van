@@ -4,7 +4,7 @@ import { ModalsContainer } from 'vue-final-modal'
 </script>
 
 <template>
-  <div class="w-full min-h-dvh text-stone-500 bg-teal-50 pb-96">
+  <div class="w-full min-h-dvh text-stone-500 bg-teal-50">
     <defaultLayout>
       <ModalsContainer />
       <router-view class="container mx-auto" />

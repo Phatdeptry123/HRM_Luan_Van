@@ -99,7 +99,7 @@ class RequestController extends Controller
      */
     public function getRequestsForUser($id)
     {
-        $requests = Request::where('user_id', $id)->with('user:id,name')->get();
+        $requests = Request::where('user_id', $id)->with('user:id,name,avatar_img_url')->get();
         return response()->json($requests);
     }
 
@@ -112,9 +112,10 @@ class RequestController extends Controller
     {
         // Sử dụng with('user') để lấy thêm thông tin của người gửi
         $requests = Request::where('manager_id', $id)
-                    ->with('user:id,name') // Chỉ lấy 'id' và 'name' từ bảng User
+                    ->with('user:id,name,avatar_img_url') 
                     ->get();
     
         return response()->json($requests);
     }
+
 }

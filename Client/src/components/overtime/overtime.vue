@@ -37,11 +37,7 @@
         class="flex justify-between items-center p-4 border-b"
       >
         <div class="flex items-center space-x-4">
-          <img
-            :src="'/path/to/avatar/' + request.user_id + '.jpg'"
-            alt="User Avatar"
-            class="w-12 h-12 rounded-full"
-          />
+          <img :src="user.avatar_img_url" alt="User Avatar" class="w-12 h-12 rounded-full" />
           <div>
             <h2 class="font-semibold">{{ user.name }} - {{ request.request_hour }} giờ</h2>
             <p class="text-sm text-gray-500">{{ request.description }}</p>
@@ -63,7 +59,7 @@
       >
         <div class="flex items-center space-x-4">
           <img
-            :src="'/path/to/avatar/' + request.user_id + '.jpg'"
+            :src="request.user.avatar_img_url"
             alt="User Avatar"
             class="w-12 h-12 rounded-full"
           />
@@ -100,7 +96,7 @@
       >
         <div class="flex items-center space-x-4">
           <img
-            :src="'/path/to/avatar/' + request.user_id + '.jpg'"
+            :src="request.user.avatar_img_url"
             alt="User Avatar"
             class="w-12 h-12 rounded-full"
           />
@@ -182,8 +178,19 @@ const activeTab = ref('myRequests')
 const isOpenModal = ref(false)
 
 const countOvertimeHours = computed(() => {
+  const currentDate = new Date()
+  const currentMonth = currentDate.getMonth()
+  const currentYear = currentDate.getFullYear()
+
   return overtimeRequests.value
-    .filter((request) => request.status === 'approved')
+    .filter((request) => {
+      const createdAt = new Date(request.created_at)
+      return (
+        request.status === 'approved' &&
+        createdAt.getMonth() === currentMonth &&
+        createdAt.getFullYear() === currentYear
+      )
+    })
     .reduce((acc, request) => acc + request.request_hour, 0)
 })
 

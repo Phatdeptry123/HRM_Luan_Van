@@ -18,6 +18,24 @@ class OvertimeService {
       return Promise.reject(error)
     }
   }
+
+  async getMonthlyOvertimeHours() {
+    try {
+      const response = await api.get(`/overtimes/monthly-hours`)
+      return response.data
+    } catch (error) {
+      return Promise.reject(error)
+    }
+  }
+
+  async getUserOvertimeRanking() {
+    try {
+      const response = await api.get(`/overtimes/count-overtime-hours-in-month-for-all-users`)
+      return response.data
+    } catch (error) {
+      return Promise.reject(error)
+    }
+  }
 }
 
 export default new OvertimeService()

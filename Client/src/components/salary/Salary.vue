@@ -3,7 +3,7 @@
     <h1 class="text-2xl font-bold mb-4">Mức Lương</h1>
     <div class="mb-4">
       <h2 class="text-lg font-semibold">{{ user.name }}</h2>
-      <p>09.24_BL VP HOPEE_Monthly - 01/09/2024 - 30/09/2024</p>
+      <p> VP HRM phiếu  lương {{currentYear}} - {{currentMonth}}</p>
     </div>
 
     <div class="flex justify-between items-center mb-4">
@@ -83,6 +83,7 @@ const salaryData = ref({
 const user = ref({})
 const attendanceData = ref([])
 const currentMonth = ref(new Date().getMonth() + 1)
+const currentYear = ref(new Date().getFullYear())
 const isVisibleHistorySalaryModal = ref(false)
 const actualWorkingDays = computed(() => {
   return attendanceData.value.filter((attendance) => {

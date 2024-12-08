@@ -132,4 +132,18 @@ class TaskController extends Controller
 
         return response()->json($task);
     }
+
+    /**
+     * số lượng task được hoàn thành trong tháng
+     *
+     * @return \Illuminate\Http\Response
+     */
+
+     public function getTasksCompletedInMonth(){
+        $tasks = Task::where('status', 'completed')
+                    ->whereMonth('created_at', date('m'))
+                    ->whereYear('created_at', date('Y'))
+                    ->count();
+        return response()->json($tasks);
+    }
 }

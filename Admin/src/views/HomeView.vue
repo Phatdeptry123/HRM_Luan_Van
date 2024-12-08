@@ -4,29 +4,10 @@
       <main class="p-6 sm:p-10 space-y-6">
         <div class="flex flex-col space-y-6 md:space-y-0 md:flex-row justify-between">
           <div class="mr-6">
-            <h1 class="text-4xl font-semibold mb-2">Dashboard</h1>
-            <h2 class="text-gray-600 ml-0.5">Mobile UX/UI Design course</h2>
+            <h1 class="text-4xl font-semibold mb-2">Hệ Thống Quản Lí Nhân Sự HRM</h1>
+            <h2 class="text-gray-600 ml-0.5"></h2>
           </div>
           <div class="flex flex-wrap items-start justify-end -mb-3">
-            <button
-              class="inline-flex px-5 py-3 text-purple-600 hover:text-purple-700 focus:text-purple-700 hover:bg-purple-100 focus:bg-purple-100 border border-purple-600 rounded-md mb-3"
-            >
-              <svg
-                aria-hidden="true"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                class="flex-shrink-0 h-5 w-5 -ml-1 mt-0.5 mr-2"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
-                />
-              </svg>
-              Manage dashboard
-            </button>
             <button
               class="inline-flex px-5 py-3 text-white bg-purple-600 hover:bg-purple-700 focus:bg-purple-700 rounded-md ml-6 mb-3"
               @click="isVisible = true"
@@ -35,7 +16,7 @@
                 :icon="['fas', 'plus']"
                 class="flex-shrink-0 h-6 w-6 text-white -ml-1 mr-2"
               />
-              Tạo nhận viên mới
+              Tạo nhân viên mới
             </button>
           </div>
         </div>
@@ -106,24 +87,13 @@
               </svg>
             </div>
             <div>
-              <span class="block text-2xl font-bold">83%</span>
-              <span class="block text-gray-500">Finished homeworks</span>
+              <span class="block text-2xl font-bold">{{ tasksCompletedInMonth }}</span>
+              <span class="block text-gray-500">Số lượng task đã hoàn thành trong thánh</span>
             </div>
           </div>
         </section>
         <section class="grid md:grid-cols-2 xl:grid-cols-4 xl:grid-rows-3 xl:grid-flow-col gap-6">
-          <div class="flex flex-col md:col-span-2 md:row-span-2 bg-white shadow rounded-lg">
-            <div class="px-6 py-5 font-semibold border-b border-gray-100">
-              The number of applied and left students per month
-            </div>
-            <div class="p-4 flex-grow">
-              <div
-                class="flex items-center justify-center h-full px-4 py-16 text-gray-400 text-3xl font-semibold bg-gray-100 border-2 border-gray-200 border-dashed rounded-md"
-              >
-                Chart
-              </div>
-            </div>
-          </div>
+          <OverTimeChart />
           <div class="flex items-center p-8 bg-white shadow rounded-lg">
             <div
               class="inline-flex flex-shrink-0 items-center justify-center h-16 w-16 text-yellow-600 bg-yellow-100 rounded-full mr-6"
@@ -150,7 +120,7 @@
             </div>
             <div>
               <span class="block text-2xl font-bold">25</span>
-              <span class="block text-gray-500">Lections left</span>
+              <span class="block text-gray-500">tính năng mới...</span>
             </div>
           </div>
           <div class="flex items-center p-8 bg-white shadow rounded-lg">
@@ -174,7 +144,7 @@
             </div>
             <div>
               <span class="block text-2xl font-bold">139</span>
-              <span class="block text-gray-500">Hours spent on lections</span>
+              <span class="block text-gray-500">Tính năng mới</span>
             </div>
           </div>
           <div class="row-span-3 bg-white shadow rounded-lg">
@@ -183,7 +153,7 @@
             >
               <span>Danh sách nhân viên</span>
             </div>
-            <div class="overflow-y-auto" style="max-height: 24rem">
+            <div class="overflow-y-auto" style="max-height: 800px">
               <ul class="p-6 space-y-6">
                 <li v-for="user in users" :key="user.id" class="flex items-center">
                   <div class="h-10 w-10 mr-3 bg-gray-100 rounded-full overflow-hidden">
@@ -195,18 +165,7 @@
               </ul>
             </div>
           </div>
-          <div class="flex flex-col row-span-3 bg-white shadow rounded-lg">
-            <div class="px-6 py-5 font-semibold border-b border-gray-100">
-              Students by type of studying
-            </div>
-            <div class="p-4 flex-grow">
-              <div
-                class="flex items-center justify-center h-full px-4 py-24 text-gray-400 text-3xl font-semibold bg-gray-100 border-2 border-gray-200 border-dashed rounded-md"
-              >
-                Chart
-              </div>
-            </div>
-          </div>
+          <OverTimeRanking />
         </section>
       </main>
     </div>
@@ -223,13 +182,16 @@ import BaseFormModal from '@/components/modal/BaseFormModal.vue'
 import AddUserModal from '@/components/modal/user/AddUserModal.vue'
 import salaryService from '@/services/salary.service'
 import overtimeService from '@/services/overtime.service'
-
+import OverTimeChart from '@/components/home/OverTimeChart.vue'
+import OverTimeRanking from '@/components/home/OverTimeRanking.vue'
+import TaskService from '@/services/task.service'
 const isVisible = ref(false)
 
 const countUsers = ref(0)
 const users = ref([])
 const averageSalary = ref(0)
 const totalOvertime = ref(0)
+const tasksCompletedInMonth = ref(0)
 
 onMounted(async () => {
   const data = await userService.getUsers()
@@ -241,7 +203,8 @@ onMounted(async () => {
   averageSalary.value = Number(res)
   const overtime = await overtimeService.totalOvertimeHoursInMonthForAllUsers()
   totalOvertime.value = overtime
-  console.log('totalOvertime', totalOvertime.value)
+  const tasks = await TaskService.getTasksCompletedInMonth()
+  tasksCompletedInMonth.value = tasks
 })
 </script>
 

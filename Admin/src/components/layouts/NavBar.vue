@@ -1,7 +1,7 @@
 <template>
   <header
     class="header sticky top-0 bg-teal-100 shadow-md flex items-center px-8 py-2 w-full"
-    style="z-index: 1"
+    style="z-index: 20"
   >
     <div class="flex items-center w-6/12 md:w-3/12">
       <!-- mobile menu button -->

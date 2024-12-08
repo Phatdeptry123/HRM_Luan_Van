@@ -51,6 +51,7 @@ Route::group([
     Route::get('/{id}/subordinates', [ManagerController::class, 'getSubordinates']);
     Route::get('/managers-with-subordinates', [ManagerController::class, 'getManagersWithSubordinates']);
     Route::post('/{id}/add-subordinate', [ManagerController::class, 'addSubordinate']);
+    Route::get('/get-manager/{id}', [ManagerController::class, 'getManager']);
 });
 
 Route::group([
@@ -73,11 +74,13 @@ Route::group([
     Route::get('/', [OvertimeController::class, 'index']);
     Route::post('/', [OvertimeController::class, 'store']);
     Route::get('/total-overtime-hours-in-month-for-all-users', [OvertimeController::class, 'totalOvertimeHoursInMonthForAllUsers']);
-    Route::get('/{id}', [OvertimeController::class, 'show']);
+    Route::get('/monthly-hours', [OvertimeController::class, 'getMonthlyOvertimeHours']);
     Route::put('/approve/{id}', [OvertimeController::class, 'approve']);
     Route::put('/reject/{id}', [OvertimeController::class, 'reject']);
     Route::get('/user/{id}', [OvertimeController::class, 'overtimeList']);
     Route::get('/manager/{id}', [OvertimeController::class, 'getOvertimeRequestsForManager']);
+    Route::get('/count-overtime-hours-in-month-for-all-users', [OvertimeController::class, 'getUserOvertimeRanking']);
+    Route::get('/{id}', [OvertimeController::class, 'show']);
 });
 
 Route::group([
@@ -124,13 +127,14 @@ Route::group([
 ], function ($router) {
     Route::get('/', [TaskController::class, 'index']);
     Route::post('/', [TaskController::class, 'store']);
-    Route::get('/{id}', [TaskController::class, 'show']);
-    Route::put('/{id}', [TaskController::class, 'update']);
-    Route::delete('/{id}', [TaskController::class, 'destroy']);
+    Route::get('/get-tasks-completed-in-month', [TaskController::class, 'getTasksCompletedInMonth']);
+    Route::get('/userOrAssignedTasks/{userId}', [TaskController::class, 'userOrAssignedTasks']);
     Route::get('/user/{userId}', [TaskController::class, 'userTasks']);
     Route::get('/assigned/{userId}', [TaskController::class, 'assignedTasks']);
-    Route::put('/{id}/status', [TaskController::class, 'updateStatus']);
     Route::put('/{id}/assigned-to', [TaskController::class, 'updateAssignedTo']);
+    Route::get('/{id}', [TaskController::class, 'show']);
+    Route::put('/{id}/status', [TaskController::class, 'updateStatus']);
+    Route::put('/{id}', [TaskController::class, 'update']);
+    Route::delete('/{id}', [TaskController::class, 'destroy']);
     Route::put('/{id}/due-date', [TaskController::class, 'updateDueDate']);
-    Route::get('/userOrAssignedTasks/{userId}', [TaskController::class, 'userOrAssignedTasks']);
 });
